@@ -1,6 +1,6 @@
 # IntelliJ
 out/
-.idea/
+.idea
 
 ### Gradle ###
 .gradle
