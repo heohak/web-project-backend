@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
 import java.time.LocalDate;
 
 @Entity
@@ -31,9 +32,9 @@ public class User {
     private String email;
 
     @Column
-    private String password;
+    private String password_hash;
 
     @Column
-    private LocalDate birthDate;
+    private Date birthDate;
 
 }
