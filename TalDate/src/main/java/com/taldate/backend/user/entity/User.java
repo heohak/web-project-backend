@@ -10,14 +10,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
-import java.time.LocalDate;
 
 @Entity
-@Table(name = "user")
+@Table(name = "user", schema = "public")
 @NoArgsConstructor
 @Data
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -32,9 +30,8 @@ public class User {
     private String email;
 
     @Column
-    private String password_hash;
+    private String passwordHash;
 
     @Column
-    private Date birthDate;
-
+    private Date dateOfBirth;
 }

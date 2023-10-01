@@ -20,7 +20,7 @@ public class UserService {
     public List<UserDTO> getAllUsers() {
         List<UserDTO> users = new ArrayList<>();
         for (User user : userRepository.findAll()) {
-            users.add(new UserDTO(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword_hash(), user.getBirthDate()));
+            users.add(new UserDTO(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPasswordHash(), user.getDateOfBirth()));
         }
         return users;
     }
@@ -29,7 +29,7 @@ public class UserService {
         UserDTO userDTO;
         try {
             User user = userRepository.getReferenceById(id);
-            userDTO = new UserDTO(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword_hash(), user.getBirthDate());
+            userDTO = new UserDTO(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPasswordHash(), user.getDateOfBirth());
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
