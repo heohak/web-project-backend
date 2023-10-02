@@ -4,7 +4,6 @@ import com.taldate.backend.user.dto.UserDTO;
 import com.taldate.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,4 +46,5 @@ public class UserController {
         userService.deleteUserByID(id);
         return ResponseEntity.noContent().build();
     }
+
 }
