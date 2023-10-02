@@ -53,4 +53,35 @@ public class UserService {
 
         return userDTO;
     }
+
+    public UserDTO updatePassword(Integer id, UserDTO userDTO) {
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+            user.setPasswordHash(userDTO.passwordHash());
+            userRepository.save(user);
+            return userDTO;
+    }
+
+    public UserDTO updateEmail(Integer id, UserDTO userDTO) {
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+            user.setEmail(userDTO.email());
+            userRepository.save(user);
+            return userDTO;
+    }
+
+    public UserDTO updateName(Integer id, UserDTO userDTO) {
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+            user.setFirstName(userDTO.firstName());
+            user.setLastName(userDTO.lastName());
+            userRepository.save(user);
+            return userDTO;
+    }
+
+    public void deleteUserByID(Integer id) {
+        userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        userRepository.deleteById(id);
+    }
 }

@@ -26,4 +26,26 @@ public class UserController {
     public UserDTO registerUser(@RequestBody UserDTO userDTO) {
         return userService.register(userDTO);
     }
+
+    @PutMapping("/user/password/{id}")
+    public UserDTO updatePassword(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
+        return userService.updatePassword(id, userDTO);
+    }
+
+    @PutMapping("/user/email/{id}")
+    public UserDTO updateEmail(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
+        return userService.updateEmail(id, userDTO);
+    }
+
+    @PutMapping("/user/name/{id}")
+    public UserDTO updateName(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
+        return userService.updateName(id, userDTO);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+        userService.deleteUserByID(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
