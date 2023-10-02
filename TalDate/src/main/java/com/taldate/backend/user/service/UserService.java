@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,23 @@ public class UserService {
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
+        return userDTO;
+    }
+
+    public UserDTO register(UserDTO userDTO) {
+        Optional<User> existingUser = userRepository.findByEmail(userDTO.email());
+        if (existingUser.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
+        }
+        User user = new User();
+        user.setFirstName(userDTO.firstName());
+        user.setLastName(userDTO.lastName());
+        user.setEmail(userDTO.email());
+        user.setPasswordHash(userDTO.passwordHash());
+        user.setDateOfBirth(userDTO.dateOfBirth());
+
+        userRepository.save(user);
+
         return userDTO;
     }
 }

@@ -3,9 +3,7 @@ package com.taldate.backend.user.controller;
 import com.taldate.backend.user.dto.UserDTO;
 import com.taldate.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,5 +20,10 @@ public class UserController {
     @GetMapping("/user/{id}")
     public UserDTO getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
+    }
+
+    @PostMapping("/user/register")
+    public UserDTO registerUser(@RequestBody UserDTO userDTO) {
+        return userService.register(userDTO);
     }
 }
