@@ -63,6 +63,8 @@ public class UserService {
     }
 
     public void deleteUserByID(Integer id) {
+        userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         userRepository.deleteById(id);
     }
 }
