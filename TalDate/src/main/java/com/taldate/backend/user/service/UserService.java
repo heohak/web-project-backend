@@ -2,39 +2,34 @@ package com.taldate.backend.user.service;
 
 import com.taldate.backend.user.dto.UserDTO;
 import com.taldate.backend.user.entity.User;
+import com.taldate.backend.user.mapper.UserMapper;
 import com.taldate.backend.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private static final String USER_NOT_FOUND_MESSAGE = "User not found";
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public List<UserDTO> getAllUsers() {
-        List<UserDTO> users = new ArrayList<>();
-        for (User user : userRepository.findAll()) {
-            users.add(new UserDTO(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPasswordHash(), user.getDateOfBirth()));
-        }
-        return users;
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(userMapper::userToUserDTO)
+                .toList();
     }
 
     public UserDTO getUserById(Integer id) {
-        UserDTO userDTO;
-        try {
-            User user = userRepository.getReferenceById(id);
-            userDTO = new UserDTO(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPasswordHash(), user.getDateOfBirth());
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-        return userDTO;
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return userMapper.userToUserDTO(user);
     }
 
     public UserDTO register(UserDTO userDTO) {
@@ -42,46 +37,43 @@ public class UserService {
         if (existingUser.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
         }
-        User user = new User();
-        user.setFirstName(userDTO.firstName());
-        user.setLastName(userDTO.lastName());
-        user.setEmail(userDTO.email());
-        user.setPasswordHash(userDTO.passwordHash());
-        user.setDateOfBirth(userDTO.dateOfBirth());
-
+        User user = userMapper.userDTOtoUser(userDTO);
         userRepository.save(user);
-
         return userDTO;
     }
 
     public UserDTO updatePassword(Integer id, UserDTO userDTO) {
-            User user = userRepository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-            user.setPasswordHash(userDTO.passwordHash());
-            userRepository.save(user);
-            return userDTO;
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND_MESSAGE));
+        user.setPasswordHash(userDTO.passwordHash());
+        userRepository.save(user);
+        return userMapper.userToUserDTO(user);
     }
 
     public UserDTO updateEmail(Integer id, UserDTO userDTO) {
-            User user = userRepository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-            user.setEmail(userDTO.email());
-            userRepository.save(user);
-            return userDTO;
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND_MESSAGE));
+        user.setEmail(userDTO.email());
+        userRepository.save(user);
+        return userMapper.userToUserDTO(user);
     }
 
     public UserDTO updateName(Integer id, UserDTO userDTO) {
-            User user = userRepository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-            user.setFirstName(userDTO.firstName());
-            user.setLastName(userDTO.lastName());
-            userRepository.save(user);
-            return userDTO;
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND_MESSAGE));
+        user.setFirstName(userDTO.firstName());
+        user.setLastName(userDTO.lastName());
+        userRepository.save(user);
+        return userMapper.userToUserDTO(user);
     }
 
     public void deleteUserByID(Integer id) {
-        userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        userRepository.findById(id).ifPresentOrElse(
+                user -> userRepository.deleteById(id),
+                () -> {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND_MESSAGE);
+                }
+        );
         userRepository.deleteById(id);
     }
 }
