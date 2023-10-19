@@ -9,41 +9,42 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/user")
+    @GetMapping()
     public List<UserDTO> getUsers() {
         return userService.getAllUsers();
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/{id}")
     public UserDTO getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
     }
 
-    @PostMapping("/user/register")
+    @PostMapping("/register")
     public UserDTO registerUser(@RequestBody UserDTO userDTO) {
         return userService.register(userDTO);
     }
 
-    @PutMapping("/user/password/{id}")
+    @PutMapping("/password/{id}")
     public UserDTO updatePassword(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
         return userService.updatePassword(id, userDTO);
     }
 
-    @PutMapping("/user/email/{id}")
+    @PutMapping("/email/{id}")
     public UserDTO updateEmail(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
         return userService.updateEmail(id, userDTO);
     }
 
-    @PutMapping("/user/name/{id}")
+    @PutMapping("/name/{id}")
     public UserDTO updateName(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
         return userService.updateName(id, userDTO);
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteUserByID(id);
         return ResponseEntity.noContent().build();
