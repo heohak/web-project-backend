@@ -35,6 +35,9 @@ public class User {
     @Column
     private Date dateOfBirth;
 
+    @Column
+    private boolean isGenderMale;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
