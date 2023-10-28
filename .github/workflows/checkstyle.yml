@@ -17,5 +17,5 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
-      - name: Run Checkstyle
-        run: ../../TalDate/gradlew checkstyleMain checkstyleTest
+      - name: Run Checkstyle with Gradle
+        run: TalDate/gradlew -p TalDate checkstyleMain checkstyleTest
