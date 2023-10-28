@@ -18,4 +18,4 @@ jobs:
           java-version: '17'
 
       - name: Run Checkstyle
-        run: ./gradlew checkstyleMain checkstyleTest
+        run: ../../TalDate/gradlew checkstyleMain checkstyleTest
