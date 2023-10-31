@@ -1,14 +1,14 @@
-name: Checkstyle
+name: Build
 
 on:
   push
 
 jobs:
-  checkstyle:
-    name: Checkstyle
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Set up JDK
@@ -17,5 +17,5 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
-      - name: Run Checkstyle with Gradle
-        run: TalDate/gradlew -p TalDate checkstyleMain checkstyleTest
+      - name: Build with Gradle
+        run: ./TalDate/gradlew build
