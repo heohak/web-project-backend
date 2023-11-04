@@ -47,7 +47,7 @@ public class AuthService {
     public String login(LoginDTO dto) {
         // Validate fields todo
 
-        Optional<User> user = userRepository.findByEmail(dto.email());
+        Optional<User> user = userRepository.findByEmail(dto.email().toLowerCase());
         if (user.isEmpty() || !passwordEncoder.matches(dto.password(), user.get().getPasswordHash())) {
             throw new UnsuccessfulLoginException("Wrong username or password.");
         }
