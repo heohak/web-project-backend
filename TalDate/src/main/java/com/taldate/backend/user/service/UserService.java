@@ -32,16 +32,6 @@ public class UserService {
         return userMapper.userToUserDTO(user);
     }
 
-    public UserDTO register(UserDTO userDTO) {
-        Optional<User> existingUser = userRepository.findByEmail(userDTO.email());
-        if (existingUser.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
-        }
-        User user = userMapper.userDTOtoUser(userDTO);
-        userRepository.save(user);
-        return userDTO;
-    }
-
     public UserDTO updatePassword(Integer id, UserDTO userDTO) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_FOUND_MESSAGE));

@@ -24,11 +24,6 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @PostMapping("/register")
-    public UserDTO registerUser(@RequestBody UserDTO userDTO) {
-        return userService.register(userDTO);
-    }
-
     @PutMapping("/password/{id}")
     public UserDTO updatePassword(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
         return userService.updatePassword(id, userDTO);
