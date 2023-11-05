@@ -3,7 +3,7 @@ FROM openjdk:17-jdk AS builder
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the built JAR file into the container
+# Copy the built JAR file from the module into the container
 COPY TalDate/build/libs/TalDate.jar /app/app.jar
 
 # Expose the port your application runs on
