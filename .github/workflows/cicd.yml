@@ -58,6 +58,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          allenvs: true
           script: |
             echo "DOCKERHUB_USERNAME: $DOCKERHUB_USERNAME"
             echo "DOCKERHUB_PASSWORD: $DOCKERHUB_PASSWORD"
