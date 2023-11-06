@@ -1,4 +1,4 @@
-name: Build Docker Image
+name: CI/CD
 
 on:
   push
@@ -11,6 +11,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Build with Gradle
+        run: ./TalDate/gradlew -p TalDate build
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -21,4 +30,4 @@ jobs:
           push: false
           # Will change it to true once we have added a Docker Hub repository
           # and its credentials to GitHub Secrets.
-          tags: taldate-docker-image:latest
+          tags: taldate-backend:latest
