@@ -5,12 +5,9 @@ Welcome to the official repository for the TalDate backend.
 # Setup
 
 ### Software and Tools Required:
-Make sure you have the latest versions of:
 
-- Java JDK
-- Docker Desktop
-- PostgreSQL
-- Liquibase
+- Java JDK  17
+- Docker Compose 2.22.0
 
 # Quickstart
 #### 1. Clone the repository
@@ -20,7 +17,13 @@ Make sure you have the latest versions of:
 - If you are using IntelliJ IDEA, make sure the IDE recognizes the project as a Spring Boot project.
 #### 3. Run the project (by running the main method in TalDateApplication.java)
 - Make sure you have Docker Desktop running.
-#### 4. Open [localhost:8080/user](localhost:8080/user)
+#### 4. Test the API endpoints
+
+Get user data by ID:
+```bash
+curl localhost:8080/user/1
+```
+(or open in browser address bar for GET request)
 
 
 
