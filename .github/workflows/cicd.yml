@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          push: false
+          push: true
           # Will change it to true once we have added a Docker Hub repository
           # and its credentials to GitHub Secrets.
           tags: taldate-backend:latest
