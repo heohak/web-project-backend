@@ -14,7 +14,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
-
     private static final String PROFILE_NOT_FOUND_MESSAGE = "Profile not found.";
     private final ProfileRepository profileRepository;
     private final UserMapper userMapper;
