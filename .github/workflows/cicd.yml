@@ -53,4 +53,4 @@ jobs:
           script: |
             echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker pull "$DOCKERHUB_USERNAME"/taldate-backend:latest
-            docker run -d --name taldate-backend -p 8080:8080 "$DOCKERHUB_USERNAME"/taldate-backend:latest
+            docker run --rm -d --name taldate-backend -p 8080:8080 "$DOCKERHUB_USERNAME"/taldate-backend:latest
