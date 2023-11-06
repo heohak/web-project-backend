@@ -42,14 +42,14 @@ jobs:
     steps:
       - name: SSH and Docker commands
         uses: appleboy/ssh-action@v1.0.0
+        env:
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
-            docker pull $DOCKERHUB_USERNAME/taldate-backend:latest
-            docker run -d --name taldate-backend -p 8080:8080 $DOCKERHUB_USERNAME/taldate-backend:latest
-        env:
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+            echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker pull "$DOCKERHUB_USERNAME"/taldate-backend:latest
+            docker run -d --name taldate-backend -p 8080:8080 "$DOCKERHUB_USERNAME"/taldate-backend:latest
