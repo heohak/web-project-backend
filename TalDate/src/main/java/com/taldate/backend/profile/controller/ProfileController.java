@@ -39,17 +39,17 @@ public class ProfileController {
     }
 
     @PutMapping("/{id}/genderPreference")
-    public ProfileDTO updateGenderPreference(@PathVariable Integer id, @RequestBody String genderPreference) {
-        return profileService.updateGenderPreference(id, genderPreference);
+    public ProfileDTO updateGenderPreference(@PathVariable Integer id, @RequestBody ProfileDTO profileDTO) {
+        return profileService.updateGenderPreference(id, profileDTO);
     }
 
     @PutMapping("/{id}/bio")
-    public ProfileDTO updateBio(@PathVariable Integer id, @RequestBody String bio) {
-        return profileService.updateBio(id, bio);
+    public ProfileDTO updateBio(@PathVariable Integer id, @RequestBody ProfileDTO profileDTO) {
+        return profileService.updateBio(id, profileDTO);
     }
 
     @PutMapping("/{id}/picture")
-    public ProfileDTO updatePicture(@PathVariable Integer id, @RequestBody String picture) {
-        return profileService.updatePicture(id, picture);
+    public ProfileDTO updatePicture(@PathVariable Integer id, @RequestBody ProfileDTO profileDTO) {
+        return profileService.updatePicture(id, profileDTO);
     }
 }

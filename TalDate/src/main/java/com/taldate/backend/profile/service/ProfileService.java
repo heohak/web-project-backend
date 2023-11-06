@@ -51,29 +51,28 @@ public class ProfileService {
                 );
     }
 
-    public ProfileDTO updateGenderPreference(Integer id, String genderPreference) {
+    public ProfileDTO updateGenderPreference(Integer id, ProfileDTO profileDTO) {
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PROFILE_NOT_FOUND_MESSAGE));
-        profile.setGenderPreference(genderPreference);
+        profile.setGenderPreference(profileDTO.genderPreference());
         profileRepository.save(profile);
         return userMapper.profileToProfileDTO(profile);
     }
 
-    public ProfileDTO updateBio(Integer id, String bio) {
+    public ProfileDTO updateBio(Integer id, ProfileDTO profileDTO) {
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PROFILE_NOT_FOUND_MESSAGE));
-        profile.setBio(bio);
+        profile.setBio(profileDTO.bio());
         profileRepository.save(profile);
         return userMapper.profileToProfileDTO(profile);
     }
 
-    public ProfileDTO updatePicture(Integer id, String picture) {
+    public ProfileDTO updatePicture(Integer id, ProfileDTO profileDTO) {
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PROFILE_NOT_FOUND_MESSAGE));
-        profile.setPicture(picture);
+        profile.setPicture(profileDTO.picture());
         profileRepository.save(profile);
         return userMapper.profileToProfileDTO(profile);
     }
-
 
 }

@@ -5,7 +5,6 @@ import com.taldate.backend.auth.dto.RegisterDTO;
 import com.taldate.backend.auth.exception.DuplicateUserException;
 import com.taldate.backend.auth.exception.UnsuccessfulLoginException;
 import com.taldate.backend.auth.service.AuthService;
-import com.taldate.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
