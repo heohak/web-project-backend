@@ -34,4 +34,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: taldate-backend:latest
+          tags: taldateadmin/taldate-backend:latest
