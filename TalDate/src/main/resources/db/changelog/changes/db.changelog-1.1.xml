@@ -21,4 +21,20 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="08-11-2023-2" author="Henry Ohak">
+        <addColumn tableName="user_profile">
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="08-11-2023-3" author="Henry Ohak">
+        <addForeignKeyConstraint constraintName="fk_user_profile_user"
+                                 baseTableName="user_profile"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"
+                                 onUpdate="NO ACTION"/>
+    </changeSet>
 </databaseChangeLog>
