@@ -24,23 +24,10 @@ public class ProfileController {
         return profileService.getProfileById(id);
     }
 
-    @PutMapping("/genderPreference")
-    public ProfileDTO updateGenderPreference(@RequestBody ProfileDTO profileDTO) {
-        int id = 1;
-        return profileService.updateGenderPreference(id, profileDTO);
-    }
-
-    @PutMapping("/bio")
-    public ProfileDTO updateBio(@RequestBody ProfileDTO profileDTO) {
+    @PutMapping
+    public void updateProfile(@RequestBody ProfileDTO profileDTO) {
         // temporary
         int id = 1;
-        return profileService.updateBio(id, profileDTO);
-    }
-
-    @PutMapping("/picture")
-    public ProfileDTO updatePicture(@RequestBody ProfileDTO profileDTO) {
-        // temporary
-        int id = 1;
-        return profileService.updatePicture(id, profileDTO);
+        profileService.updateProfile(id, profileDTO);
     }
 }

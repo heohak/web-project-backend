@@ -4,6 +4,7 @@ import com.taldate.backend.profile.dto.ProfileDTO;
 import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.repository.ProfileRepository;
 import com.taldate.backend.user.mapper.UserMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,28 +32,37 @@ public class ProfileService {
         return userMapper.profileToProfileDTO(profile);
     }
 
-    public ProfileDTO updateGenderPreference(Integer id, ProfileDTO profileDTO) {
+    @Transactional
+    public void updateProfile(int id, ProfileDTO profileDTO) {
+        // Validations
+        // ...
+
+        updateGenderPreference(id, profileDTO);
+        updateBio(id, profileDTO);
+        updatePicture(id, profileDTO);
+    }
+
+    private void updateGenderPreference(Integer id, ProfileDTO profileDTO) {
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PROFILE_NOT_FOUND_MESSAGE));
         profile.setGenderPreferenceMale(profileDTO.genderPreferenceMale());
         profileRepository.save(profile);
-        return userMapper.profileToProfileDTO(profile);
+        userMapper.profileToProfileDTO(profile);
     }
 
-    public ProfileDTO updateBio(Integer id, ProfileDTO profileDTO) {
+    private void updateBio(Integer id, ProfileDTO profileDTO) {
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PROFILE_NOT_FOUND_MESSAGE));
         profile.setBio(profileDTO.bio());
         profileRepository.save(profile);
-        return userMapper.profileToProfileDTO(profile);
+        userMapper.profileToProfileDTO(profile);
     }
 
-    public ProfileDTO updatePicture(Integer id, ProfileDTO profileDTO) {
+    private void updatePicture(Integer id, ProfileDTO profileDTO) {
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PROFILE_NOT_FOUND_MESSAGE));
         profile.setPicture(profileDTO.picture());
         profileRepository.save(profile);
-        return userMapper.profileToProfileDTO(profile);
+        userMapper.profileToProfileDTO(profile);
     }
-
 }
