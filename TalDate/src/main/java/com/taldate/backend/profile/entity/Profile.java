@@ -1,6 +1,7 @@
 package com.taldate.backend.profile.entity;
 
 
+import com.taldate.backend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.ToString;
 import java.util.Objects;
 
 @Entity
-@Table(name = "user_profile", schema = "public")
+@Table(name = "profile", schema = "public")
 @NoArgsConstructor
 @Getter
 @Setter
@@ -20,8 +21,11 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @OneToOne(mappedBy = "profile")
+    private User user;
+
     @Column
-    private String genderPreference;
+    private boolean genderPreferenceMale;
 
     @Column
     private String bio;

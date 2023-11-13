@@ -18,16 +18,6 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final UserMapper userMapper;
 
-    public ProfileDTO createProfile(ProfileDTO profileDTO) {
-        Profile profile = new Profile();
-        profile.setGenderPreference(profileDTO.genderPreference());
-        profile.setBio(profileDTO.bio());
-        profile.setPicture(profileDTO.picture());
-
-        Profile savedProfile = profileRepository.save(profile);
-        return userMapper.profileToProfileDTO(savedProfile);
-    }
-
     public List<ProfileDTO> getAllProfiles() {
         List<Profile> profiles = profileRepository.findAll();
         return profiles.stream()
@@ -41,20 +31,10 @@ public class ProfileService {
         return userMapper.profileToProfileDTO(profile);
     }
 
-    public void deleteProfileById(Integer id) {
-        profileRepository.findById(id)
-                .ifPresentOrElse(
-                        profile -> profileRepository.deleteById(id),
-                        () -> {
-                            throw new ResponseStatusException(HttpStatus.NOT_FOUND, PROFILE_NOT_FOUND_MESSAGE);
-                        }
-                );
-    }
-
     public ProfileDTO updateGenderPreference(Integer id, ProfileDTO profileDTO) {
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PROFILE_NOT_FOUND_MESSAGE));
-        profile.setGenderPreference(profileDTO.genderPreference());
+        profile.setGenderPreferenceMale(profileDTO.genderPreferenceMale());
         profileRepository.save(profile);
         return userMapper.profileToProfileDTO(profile);
     }

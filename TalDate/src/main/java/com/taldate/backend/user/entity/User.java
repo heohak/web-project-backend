@@ -1,5 +1,6 @@
 package com.taldate.backend.user.entity;
 
+import com.taldate.backend.profile.entity.Profile;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @OneToOne
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
+
     @Column
     private String firstName;
 
@@ -36,7 +41,7 @@ public class User {
     private Date dateOfBirth;
 
     @Column
-    private boolean isGenderMale;
+    private boolean genderMale;
 
     @Override
     public boolean equals(Object o) {

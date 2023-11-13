@@ -25,7 +25,7 @@
             <column name="date_of_birth" type="date">
                 <constraints nullable="false"/>
             </column>
-            <column name="is_gender_male" type="boolean">
+            <column name="gender_male" type="boolean">
                 <constraints nullable="false"/>
             </column>
         </createTable>
