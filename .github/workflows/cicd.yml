@@ -58,4 +58,4 @@ jobs:
             docker pull "$DOCKERHUB_USERNAME"/taldate-backend:latest
             docker stop taldate-backend
             docker rm taldate-backend
-            docker run -d --name taldate-backend -p 8080:8080 "$DOCKERHUB_USERNAME"/taldate-backend:latest --network=host
+            docker run --network=host -d --name taldate-backend -p 8080:8080 "$DOCKERHUB_USERNAME"/taldate-backend:latest
