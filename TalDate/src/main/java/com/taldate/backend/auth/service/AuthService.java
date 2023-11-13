@@ -5,9 +5,12 @@ import com.taldate.backend.auth.dto.RegisterDTO;
 import com.taldate.backend.auth.exception.DuplicateUserException;
 import com.taldate.backend.auth.exception.UnsuccessfulLoginException;
 import com.taldate.backend.auth.validator.RegisterValidator;
+import com.taldate.backend.profile.entity.Profile;
+import com.taldate.backend.profile.repository.ProfileRepository;
 import com.taldate.backend.user.entity.User;
 import com.taldate.backend.user.mapper.UserMapper;
 import com.taldate.backend.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,9 +23,11 @@ import java.util.Optional;
 @Service
 public class AuthService {
     private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void register(RegisterDTO dto) {
         // Validate fields
         if (!RegisterValidator.isValidDto(dto)) {
@@ -37,10 +42,18 @@ public class AuthService {
             throw new DuplicateUserException("Account with this email already exists.");
         }
 
-        // Create new User account with hashed password & add them to the database
+        // Checks passed!
+        // 1. Create new default empty profile
+        Profile profile = new Profile();
+        profile.setGenderPreferenceMale(!dto.genderMale());
+        profile.setBio("");
+        profile.setPicture("");
+        profileRepository.save(profile);
+        // 2. Create new user account
         User user = userMapper.registerDTOtoUser(dto);
         user.setEmail(dto.email().toLowerCase());
         user.setPasswordHash(passwordEncoder.encode(dto.password()));
+        user.setProfile(profile);
         userRepository.save(user);
     }
 

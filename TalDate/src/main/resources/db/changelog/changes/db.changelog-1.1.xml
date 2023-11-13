@@ -5,29 +5,27 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
-    <changeSet id="2023-10-22 Create table 'users'" author="Uku Sõrmus">
-        <createTable tableName="user">
+    <changeSet id="2023-11-13 Create table 'profile'" author="Henry Ohak">
+        <createTable tableName="profile">
             <column autoIncrement="true" name="id" type="integer">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="user_pk"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="profile_pk"/>
             </column>
-            <column name="email" type="text">
+            <column name="gender_preference_male" type="boolean">
                 <constraints nullable="false"/>
             </column>
-            <column name="password_hash" type="text">
+            <column name="bio" type="text">
                 <constraints nullable="false"/>
             </column>
-            <column name="first_name" type="text">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_name" type="text">
-                <constraints nullable="false"/>
-            </column>
-            <column name="date_of_birth" type="date">
-                <constraints nullable="false"/>
-            </column>
-            <column name="gender_male" type="boolean">
+            <column name="picture" type="text">
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
+    <changeSet id="2023-11-13 Add foreign key 'profile_id' to table 'user'" author="Uku Sõrmus">
+        <addColumn tableName="user">
+            <column name="profile_id" type="integer">
+                <constraints nullable="false" foreignKeyName="fk_profile_id" references="profile(id)"/>
+            </column>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>
