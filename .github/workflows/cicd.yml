@@ -6,6 +6,8 @@ on:
       - main
 
 jobs:
+
+  # Build and push Docker image
   build:
     runs-on: ubuntu-latest
 
