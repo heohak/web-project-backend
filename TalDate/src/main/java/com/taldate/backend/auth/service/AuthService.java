@@ -1,9 +1,11 @@
 package com.taldate.backend.auth.service;
 
 import com.taldate.backend.auth.dto.LoginDTO;
+import com.taldate.backend.auth.dto.LoginResponseDTO;
 import com.taldate.backend.auth.dto.RegisterDTO;
 import com.taldate.backend.auth.exception.DuplicateUserException;
 import com.taldate.backend.auth.exception.UnsuccessfulLoginException;
+import com.taldate.backend.auth.jwt.JwtUtils;
 import com.taldate.backend.auth.validator.RegisterValidator;
 import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.repository.ProfileRepository;
@@ -26,6 +28,7 @@ public class AuthService {
     private final ProfileRepository profileRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
 
     @Transactional
     public void register(RegisterDTO dto) {
@@ -57,16 +60,16 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public String login(LoginDTO dto) {
-        // Validate fields todo
+    public LoginResponseDTO login(LoginDTO dto) {
+        // Validate fields to do
 
         Optional<User> user = userRepository.findByEmail(dto.email().toLowerCase());
         if (user.isEmpty() || !passwordEncoder.matches(dto.password(), user.get().getPasswordHash())) {
             throw new UnsuccessfulLoginException("Wrong username or password.");
         }
 
-        // Generate token todo
-        return "Login OK";
+        // Generate token
+        return new LoginResponseDTO(jwtUtils.generateToken(user.get().getId()));
     }
 }
 

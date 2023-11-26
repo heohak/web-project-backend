@@ -3,6 +3,8 @@ package com.taldate.backend.profile.controller;
 import com.taldate.backend.profile.dto.ProfileDTO;
 import com.taldate.backend.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +28,7 @@ public class ProfileController {
 
     @PutMapping
     public void updateProfile(@RequestBody ProfileDTO profileDTO) {
-        // temporary
-        int id = 1;
-        profileService.updateProfile(id, profileDTO);
+        SecurityContext context = SecurityContextHolder.getContext();
+        profileService.updateProfile((int)(context.getAuthentication().getPrincipal()), profileDTO);
     }
 }

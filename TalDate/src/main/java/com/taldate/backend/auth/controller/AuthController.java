@@ -1,6 +1,7 @@
 package com.taldate.backend.auth.controller;
 
 import com.taldate.backend.auth.dto.LoginDTO;
+import com.taldate.backend.auth.dto.LoginResponseDTO;
 import com.taldate.backend.auth.dto.RegisterDTO;
 import com.taldate.backend.auth.exception.DuplicateUserException;
 import com.taldate.backend.auth.exception.UnsuccessfulLoginException;
@@ -24,8 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginDTO dto) {
-        // temporary; return String
+    public LoginResponseDTO login(@RequestBody LoginDTO dto) {
         return service.login(dto);
     }
 
