@@ -1,14 +1,13 @@
 package com.taldate.backend.profile.service;
 
+import com.taldate.backend.auth.exception.ProfileNotFoundException;
 import com.taldate.backend.profile.dto.ProfileDTO;
 import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.repository.ProfileRepository;
 import com.taldate.backend.user.mapper.UserMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class ProfileService {
 
     public ProfileDTO getProfileById(Integer id) {
         Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PROFILE_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new ProfileNotFoundException(PROFILE_NOT_FOUND_MESSAGE));
         return userMapper.profileToProfileDTO(profile);
     }
 
@@ -44,7 +43,7 @@ public class ProfileService {
 
     private void updateGenderPreference(Integer id, ProfileDTO profileDTO) {
         Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PROFILE_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new ProfileNotFoundException(PROFILE_NOT_FOUND_MESSAGE));
         profile.setGenderPreferenceMale(profileDTO.genderPreferenceMale());
         profileRepository.save(profile);
         userMapper.profileToProfileDTO(profile);
@@ -52,7 +51,7 @@ public class ProfileService {
 
     private void updateBio(Integer id, ProfileDTO profileDTO) {
         Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PROFILE_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new ProfileNotFoundException(PROFILE_NOT_FOUND_MESSAGE));
         profile.setBio(profileDTO.bio());
         profileRepository.save(profile);
         userMapper.profileToProfileDTO(profile);
@@ -60,7 +59,7 @@ public class ProfileService {
 
     private void updatePicture(Integer id, ProfileDTO profileDTO) {
         Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PROFILE_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new ProfileNotFoundException(PROFILE_NOT_FOUND_MESSAGE));
         profile.setPicture(profileDTO.picture());
         profileRepository.save(profile);
         userMapper.profileToProfileDTO(profile);

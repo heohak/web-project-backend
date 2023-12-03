@@ -3,6 +3,7 @@ package com.taldate.backend.auth.service;
 import com.taldate.backend.auth.dto.LoginDTO;
 import com.taldate.backend.auth.dto.LoginResponseDTO;
 import com.taldate.backend.auth.dto.RegisterDTO;
+import com.taldate.backend.auth.exception.ApplicationException;
 import com.taldate.backend.auth.exception.DuplicateUserException;
 import com.taldate.backend.auth.exception.UnsuccessfulLoginException;
 import com.taldate.backend.auth.jwt.JwtUtils;
@@ -14,10 +15,8 @@ import com.taldate.backend.user.mapper.UserMapper;
 import com.taldate.backend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -36,7 +35,7 @@ public class AuthService {
         if (!RegisterValidator.isValidDto(dto)) {
             // Front end should duplicate all the checks in RegisterValidator,
             // so we shall not respond here with any specific error message
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ApplicationException("Bad request");
         }
 
         // Avoid duplicate emails
