@@ -34,7 +34,7 @@ or SSH:
 #### 2. Start the PostgreSQL database 
 
 ```bash
-docker compose up -d
+docker compose up db -d
 ```
 
 #### 3. Compile and run the Spring Boot project
@@ -75,6 +75,8 @@ curl http://localhost:8080/api/auth/register \
 
 You should receive a 200 OK response.
 If you repeat the request, you should receive error 400 with the message `{"error":"Account with this email already exists."}`.
+
+You can uncomment `.anyRequest().permitAll()` in SecurityConfig.java 
 
 We recommend you to test the backend in conjunction with our [frontend](https://github.com/Robsukas/iti0302-2023-frontend).
 
