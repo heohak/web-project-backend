@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class KanyeQuoteController {
     private final KanyeQuoteService kanyeQuoteService;
 
-    @GetMapping("/quote")
+    @GetMapping("/api/quote")
     public ResponseEntity<KanyeQuoteDTO> getQuote() {
         KanyeQuoteDTO quote = kanyeQuoteService.getKanyeQuote();
         return ResponseEntity.ok(quote);
