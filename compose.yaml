@@ -1,0 +1,23 @@
+# The actual values for database access
+# (see the 'environment' of both 'db' and 'app' services)
+# differ on the server's compose.yaml file.
+services:
+  db:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_PASSWORD=dev'
+    ports:
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - ./database:/var/lib/postgresql/data
+  app:
+    depends_on:
+      - db
+    image: taldateadmin/taldate-backend:latest
+    ports:
+      - '127.0.0.1:8080:8080'
+    environment:
+      - 'SPRING_DATASOURCE_USERNAME=postgres'
+      - 'SPRING_DATASOURCE_PASSWORD=dev'
+      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres'
