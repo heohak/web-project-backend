@@ -31,4 +31,9 @@ public class ProfileController {
         SecurityContext context = SecurityContextHolder.getContext();
         profileService.updateProfile((int)(context.getAuthentication().getPrincipal()), profileDTO);
     }
+
+    @GetMapping("/random")
+    public ProfileDTO getRandomProfile() {
+        return profileService.getRandomProfile();
+    }
 }

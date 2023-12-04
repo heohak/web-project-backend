@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ public class ProfileService {
     private static final String PROFILE_NOT_FOUND_MESSAGE = "Profile not found.";
     private final ProfileRepository profileRepository;
     private final UserMapper userMapper;
+    private final Random random = new Random();
 
     public List<ProfileDTO> getAllProfiles() {
         log.info("Retrieving all profiles");
@@ -70,5 +73,13 @@ public class ProfileService {
         profile.setPicture(profileDTO.picture());
         profileRepository.save(profile);
         userMapper.profileToProfileDTO(profile);
+    }
+    public ProfileDTO getRandomProfile() {
+        List<Profile> profiles = profileRepository.findAll();
+        if (profiles.isEmpty()) {
+            throw new ApplicationException("No profiles available.");
+        }
+        Profile randomProfile = profiles.get(random.nextInt(profiles.size()));
+        return userMapper.profileToProfileDTO(randomProfile);
     }
 }
