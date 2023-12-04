@@ -3,8 +3,7 @@ package com.taldate.backend.auth.service;
 import com.taldate.backend.auth.dto.LoginDTO;
 import com.taldate.backend.auth.dto.LoginResponseDTO;
 import com.taldate.backend.auth.dto.RegisterDTO;
-import com.taldate.backend.auth.exception.DuplicateUserException;
-import com.taldate.backend.auth.exception.UnsuccessfulLoginException;
+import com.taldate.backend.exception.ApplicationException;
 import com.taldate.backend.auth.jwt.JwtUtils;
 import com.taldate.backend.auth.validator.RegisterValidator;
 import com.taldate.backend.profile.entity.Profile;
@@ -14,10 +13,8 @@ import com.taldate.backend.user.mapper.UserMapper;
 import com.taldate.backend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -36,13 +33,13 @@ public class AuthService {
         if (!RegisterValidator.isValidDto(dto)) {
             // Front end should duplicate all the checks in RegisterValidator,
             // so we shall not respond here with any specific error message
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ApplicationException("Bad request");
         }
 
         // Avoid duplicate emails
         Optional<User> existingUser = userRepository.findByEmail(dto.email().toLowerCase());
         if (existingUser.isPresent()) {
-            throw new DuplicateUserException("Account with this email already exists.");
+            throw new ApplicationException("Account with this email already exists.");
         }
 
         // Checks passed!
@@ -65,7 +62,7 @@ public class AuthService {
 
         Optional<User> user = userRepository.findByEmail(dto.email().toLowerCase());
         if (user.isEmpty() || !passwordEncoder.matches(dto.password(), user.get().getPasswordHash())) {
-            throw new UnsuccessfulLoginException("Wrong username or password.");
+            throw new ApplicationException("Wrong username or password.");
         }
 
         // Generate token
