@@ -3,9 +3,7 @@ package com.taldate.backend.auth.service;
 import com.taldate.backend.auth.dto.LoginDTO;
 import com.taldate.backend.auth.dto.LoginResponseDTO;
 import com.taldate.backend.auth.dto.RegisterDTO;
-import com.taldate.backend.auth.exception.ApplicationException;
-import com.taldate.backend.auth.exception.DuplicateUserException;
-import com.taldate.backend.auth.exception.UnsuccessfulLoginException;
+import com.taldate.backend.exception.ApplicationException;
 import com.taldate.backend.auth.jwt.JwtUtils;
 import com.taldate.backend.auth.validator.RegisterValidator;
 import com.taldate.backend.profile.entity.Profile;
@@ -18,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -46,7 +44,7 @@ public class AuthService {
         Optional<User> existingUser = userRepository.findByEmail(dto.email().toLowerCase());
         if (existingUser.isPresent()) {
             log.warn("Registration attempt failed due to duplicate email: {}", dto.email());
-            throw new DuplicateUserException("Account with this email already exists.");
+            throw new ApplicationException("Account with this email already exists.");
         }
 
         // Checks passed!
@@ -74,7 +72,7 @@ public class AuthService {
         Optional<User> user = userRepository.findByEmail(dto.email().toLowerCase());
         if (user.isEmpty() || !passwordEncoder.matches(dto.password(), user.get().getPasswordHash())) {
             log.warn("Login attempt failed for email: {}", dto.email());
-            throw new UnsuccessfulLoginException("Wrong username or password.");
+            throw new ApplicationException("Wrong username or password.");
         }
 
         log.info("User logged in successfully: {}", dto.email());
