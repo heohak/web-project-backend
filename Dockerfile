@@ -1,13 +1,10 @@
-FROM openjdk:17-jdk AS builder
+FROM eclipse-temurin:17-jdk-alpine AS build
+COPY TalDate/ /builder
+WORKDIR /builder
+RUN ./gradlew clean build
 
-# Set the working directory in the container
+FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
-
-# Copy the built JAR file from the module into the container
-COPY TalDate/build/libs/Backend-0.0.1-SNAPSHOT.jar /app/app.jar
-
-# Expose the port your application runs on
+COPY --from=build /builder/build/libs/*.jar /app/app.jar
 EXPOSE 8080
-
-# Define the command to run your application
 CMD ["java", "-jar", "app.jar"]
