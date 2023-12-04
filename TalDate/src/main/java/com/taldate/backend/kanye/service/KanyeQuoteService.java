@@ -9,11 +9,10 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class KanyeQuoteService {
 
-    private final RestTemplate restTemplate;
     private static final String KANYE_REST_URL = "https://api.kanye.rest/";
 
     public KanyeQuoteDTO getKanyeQuote() {
-        return restTemplate.getForObject(KANYE_REST_URL, KanyeQuoteDTO.class);
+        return (new RestTemplate()).getForObject(KANYE_REST_URL, KanyeQuoteDTO.class);
     }
 
 
