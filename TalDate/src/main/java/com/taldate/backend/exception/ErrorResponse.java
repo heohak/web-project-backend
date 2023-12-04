@@ -1,4 +1,4 @@
-package com.taldate.backend.auth.exception;
+package com.taldate.backend.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
