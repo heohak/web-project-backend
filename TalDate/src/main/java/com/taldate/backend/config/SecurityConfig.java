@@ -31,6 +31,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/quote").permitAll()
                 .anyRequest().authenticated()
                 //.anyRequest().permitAll()
             )
@@ -42,4 +43,6 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+
 }
