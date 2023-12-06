@@ -37,6 +37,9 @@ public class Profile {
     @Column
     private String picture;
 
+    @Column
+    private boolean profileActive;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

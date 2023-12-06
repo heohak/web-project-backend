@@ -46,6 +46,7 @@ public class ProfileService {
         updateGenderPreference(id, profileDTO);
         updateBio(id, profileDTO);
         updatePicture(id, profileDTO);
+        setProfileActive(id);
     }
 
     private void updateGenderPreference(Integer id, ProfileDTO profileDTO) {
@@ -74,12 +75,22 @@ public class ProfileService {
         profileRepository.save(profile);
         userMapper.profileToProfileDTO(profile);
     }
+
+    public void setProfileActive(Integer id) {
+        log.debug("Setting profile active for profile ID: {}", id);
+        Profile profile = profileRepository.findById(id)
+                .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
+        profile.setProfileActive(true);
+        profileRepository.save(profile);
+        userMapper.profileToProfileDTO(profile);
+    }
+
     public ProfileDTO getRandomProfile() {
-        List<Profile> profiles = profileRepository.findAll();
-        if (profiles.isEmpty()) {
-            throw new ApplicationException("No profiles available.");
+        List<Profile> activeProfiles = profileRepository.findByProfileActiveTrue();
+        if (activeProfiles.isEmpty()) {
+            throw new ApplicationException("No active profiles available.");
         }
-        Profile randomProfile = profiles.get(random.nextInt(profiles.size()));
+        Profile randomProfile = activeProfiles.get(random.nextInt(activeProfiles.size()));
         return userMapper.profileToProfileDTO(randomProfile);
     }
 }
