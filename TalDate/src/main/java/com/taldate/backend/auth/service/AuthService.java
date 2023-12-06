@@ -16,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Optional;
 
 @Slf4j
@@ -47,12 +50,21 @@ public class AuthService {
             throw new ApplicationException("Account with this email already exists.");
         }
 
+        // Calculate age
+        LocalDate birthDate = dto.dateOfBirth().toLocalDate();
+        LocalDate now = LocalDate.now();
+        Period p = Period.between(birthDate, now);
+        int age = p.getYears();
+
         // Checks passed!
         // 1. Create new default empty profile
         Profile profile = new Profile();
+        profile.setName(dto.firstName() + " " + dto.lastName());
+        profile.setAge(age);
         profile.setGenderPreferenceMale(!dto.genderMale());
         profile.setBio("");
         profile.setPicture("");
+
         profileRepository.save(profile);
         // 2. Create new user account
         User user = userMapper.registerDTOtoUser(dto);

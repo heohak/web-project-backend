@@ -23,6 +23,12 @@ public class Profile {
     private User user;
 
     @Column
+    private String name;
+
+    @Column
+    private int age;
+
+    @Column
     private boolean genderPreferenceMale;
 
     @Column
