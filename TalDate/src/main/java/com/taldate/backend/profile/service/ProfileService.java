@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 @Slf4j
@@ -40,46 +42,43 @@ public class ProfileService {
     @Transactional
     public void updateProfile(int id, ProfileDTO profileDTO) {
         log.info("Updating profile for ID: {}", id);
-        // Validations
-        // ...
-
-        updateGenderPreference(id, profileDTO);
-        updateBio(id, profileDTO);
-        updatePicture(id, profileDTO);
-    }
-
-    private void updateGenderPreference(Integer id, ProfileDTO profileDTO) {
-        log.debug("Updating gender preference for profile ID: {}", id);
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
+
         profile.setGenderPreferenceMale(profileDTO.genderPreferenceMale());
-        profileRepository.save(profile);
-        userMapper.profileToProfileDTO(profile);
-    }
-
-    private void updateBio(Integer id, ProfileDTO profileDTO) {
-        log.debug("Updating bio for profile ID: {}", id);
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
         profile.setBio(profileDTO.bio());
+        profile.setPicture(profileDTO.picture());
+        profile.setProfileActive(true);
+
         profileRepository.save(profile);
-        userMapper.profileToProfileDTO(profile);
     }
 
-    private void updatePicture(Integer id, ProfileDTO profileDTO) {
-        log.debug("Updating picture for profile ID: {}", id);
-        Profile profile = profileRepository.findById(id)
+    public ProfileDTO getRandomProfile(Integer userId) {
+        // Retrieve the current user's profile
+        Profile currentUserProfile = profileRepository.findById(userId)
                 .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
-        profile.setPicture(profileDTO.picture());
-        profileRepository.save(profile);
-        userMapper.profileToProfileDTO(profile);
-    }
-    public ProfileDTO getRandomProfile() {
-        List<Profile> profiles = profileRepository.findAll();
-        if (profiles.isEmpty()) {
-            throw new ApplicationException("No profiles available.");
+
+        // Retrieve active profiles
+        List<Profile> activeProfiles = profileRepository.findByProfileActiveTrue();
+        if (activeProfiles.isEmpty()) {
+            throw new ApplicationException("No active profiles available.");
         }
-        Profile randomProfile = profiles.get(random.nextInt(profiles.size()));
+
+        // Filter profiles based on user's gender preference using a for loop
+        List<Profile> matchingProfiles = new ArrayList<>();
+        for (Profile profile : activeProfiles) {
+            if (profile.isGenderMale() == currentUserProfile.isGenderPreferenceMale()
+                    && !Objects.equals(profile.getId(), currentUserProfile.getId())) {
+                matchingProfiles.add(profile);
+            }
+        }
+
+        if (matchingProfiles.isEmpty()) {
+            throw new ApplicationException("No matching profiles based on user's gender preference.");
+        }
+
+        // Select a random profile from the matching profiles
+        Profile randomProfile = matchingProfiles.get(random.nextInt(matchingProfiles.size()));
         return userMapper.profileToProfileDTO(randomProfile);
     }
 }

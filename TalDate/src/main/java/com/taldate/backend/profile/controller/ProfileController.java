@@ -17,14 +17,20 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping
-    public List<ProfileDTO> getAllProfiles() {
-        return profileService.getAllProfiles();
+    public ProfileDTO getCurrentProfile() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        return profileService.getProfileById((int)(context.getAuthentication().getPrincipal()));
     }
 
-    @GetMapping("/{id}")
-    public ProfileDTO getProfileById(@PathVariable Integer id) {
-        return profileService.getProfileById(id);
-    }
+//    @GetMapping
+//    public List<ProfileDTO> getAllProfiles() {
+//        return profileService.getAllProfiles();
+//    }
+
+//    @GetMapping("/{id}")
+//    public ProfileDTO getProfileById(@PathVariable Integer id) {
+//        return profileService.getProfileById(id);
+//    }
 
     @PutMapping
     public void updateProfile(@RequestBody ProfileDTO profileDTO) {
@@ -34,6 +40,7 @@ public class ProfileController {
 
     @GetMapping("/random")
     public ProfileDTO getRandomProfile() {
-        return profileService.getRandomProfile();
+        SecurityContext context = SecurityContextHolder.getContext();
+        return profileService.getRandomProfile((int)(context.getAuthentication().getPrincipal()));
     }
 }
