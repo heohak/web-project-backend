@@ -64,6 +64,8 @@ public class AuthService {
         profile.setGenderPreferenceMale(!dto.genderMale());
         profile.setBio("");
         profile.setPicture("");
+        profile.setGenderMale(dto.genderMale());
+        profile.setProfileActive(false);
 
         profileRepository.save(profile);
         // 2. Create new user account
