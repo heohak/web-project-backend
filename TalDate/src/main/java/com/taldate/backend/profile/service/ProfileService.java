@@ -4,9 +4,7 @@ import com.taldate.backend.exception.ApplicationException;
 import com.taldate.backend.profile.dto.ProfileDTO;
 import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.repository.ProfileRepository;
-import com.taldate.backend.user.entity.User;
 import com.taldate.backend.user.mapper.UserMapper;
-import com.taldate.backend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +21,6 @@ import java.util.Random;
 public class ProfileService {
     private static final String PROFILE_NOT_FOUND_MESSAGE = "Profile not found.";
     private final ProfileRepository profileRepository;
-    private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final Random random = new Random();
 
