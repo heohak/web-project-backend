@@ -69,6 +69,5 @@ public class UserService {
                     throw new ApplicationException(USER_NOT_FOUND_MESSAGE);
                 }
         );
-        userRepository.deleteById(id);
     }
 }
