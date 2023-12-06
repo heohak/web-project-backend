@@ -5,5 +5,6 @@ public record ProfileDTO(String name,
                          boolean genderPreferenceMale,
                          String bio,
                          String picture,
-                         boolean profileActive) {
+                         boolean profileActive,
+                         boolean genderMale) {
 }

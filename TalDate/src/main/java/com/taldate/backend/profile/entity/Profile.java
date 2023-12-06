@@ -40,6 +40,9 @@ public class Profile {
     @Column
     private boolean profileActive;
 
+    @Column
+    private boolean genderMale;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
