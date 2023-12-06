@@ -4,9 +4,7 @@ import com.taldate.backend.exception.ApplicationException;
 import com.taldate.backend.profile.dto.ProfileDTO;
 import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.repository.ProfileRepository;
-import com.taldate.backend.user.entity.User;
 import com.taldate.backend.user.mapper.UserMapper;
-import com.taldate.backend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +21,6 @@ import java.util.Random;
 public class ProfileService {
     private static final String PROFILE_NOT_FOUND_MESSAGE = "Profile not found.";
     private final ProfileRepository profileRepository;
-    private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final Random random = new Random();
 
@@ -45,49 +42,15 @@ public class ProfileService {
     @Transactional
     public void updateProfile(int id, ProfileDTO profileDTO) {
         log.info("Updating profile for ID: {}", id);
-        // Validations
-        // ...
-
-        updateGenderPreference(id, profileDTO);
-        updateBio(id, profileDTO);
-        updatePicture(id, profileDTO);
-        setProfileActive(id);
-    }
-
-    private void updateGenderPreference(Integer id, ProfileDTO profileDTO) {
-        log.debug("Updating gender preference for profile ID: {}", id);
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
+
         profile.setGenderPreferenceMale(profileDTO.genderPreferenceMale());
-        profileRepository.save(profile);
-        userMapper.profileToProfileDTO(profile);
-    }
-
-    private void updateBio(Integer id, ProfileDTO profileDTO) {
-        log.debug("Updating bio for profile ID: {}", id);
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
         profile.setBio(profileDTO.bio());
-        profileRepository.save(profile);
-        userMapper.profileToProfileDTO(profile);
-    }
-
-    private void updatePicture(Integer id, ProfileDTO profileDTO) {
-        log.debug("Updating picture for profile ID: {}", id);
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
         profile.setPicture(profileDTO.picture());
-        profileRepository.save(profile);
-        userMapper.profileToProfileDTO(profile);
-    }
-
-    public void setProfileActive(Integer id) {
-        log.debug("Setting profile active for profile ID: {}", id);
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
         profile.setProfileActive(true);
+
         profileRepository.save(profile);
-        userMapper.profileToProfileDTO(profile);
     }
 
     public ProfileDTO getRandomProfile(Integer userId) {
@@ -118,6 +81,4 @@ public class ProfileService {
         Profile randomProfile = matchingProfiles.get(random.nextInt(matchingProfiles.size()));
         return userMapper.profileToProfileDTO(randomProfile);
     }
-
-
 }
