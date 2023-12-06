@@ -40,40 +40,16 @@ public class ProfileService {
     @Transactional
     public void updateProfile(int id, ProfileDTO profileDTO) {
         log.info("Updating profile for ID: {}", id);
-        // Validations
-        // ...
-
-        updateGenderPreference(id, profileDTO);
-        updateBio(id, profileDTO);
-        updatePicture(id, profileDTO);
-    }
-
-    private void updateGenderPreference(Integer id, ProfileDTO profileDTO) {
-        log.debug("Updating gender preference for profile ID: {}", id);
         Profile profile = profileRepository.findById(id)
                 .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
+
         profile.setGenderPreferenceMale(profileDTO.genderPreferenceMale());
-        profileRepository.save(profile);
-        userMapper.profileToProfileDTO(profile);
-    }
-
-    private void updateBio(Integer id, ProfileDTO profileDTO) {
-        log.debug("Updating bio for profile ID: {}", id);
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
         profile.setBio(profileDTO.bio());
+        profile.setPicture(profileDTO.picture());
+
         profileRepository.save(profile);
-        userMapper.profileToProfileDTO(profile);
     }
 
-    private void updatePicture(Integer id, ProfileDTO profileDTO) {
-        log.debug("Updating picture for profile ID: {}", id);
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
-        profile.setPicture(profileDTO.picture());
-        profileRepository.save(profile);
-        userMapper.profileToProfileDTO(profile);
-    }
     public ProfileDTO getRandomProfile() {
         List<Profile> profiles = profileRepository.findAll();
         if (profiles.isEmpty()) {
