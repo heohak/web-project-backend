@@ -4,13 +4,17 @@ import com.taldate.backend.exception.ApplicationException;
 import com.taldate.backend.profile.dto.ProfileDTO;
 import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.repository.ProfileRepository;
+import com.taldate.backend.user.entity.User;
 import com.taldate.backend.user.mapper.UserMapper;
+import com.taldate.backend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 @Slf4j
@@ -19,6 +23,7 @@ import java.util.Random;
 public class ProfileService {
     private static final String PROFILE_NOT_FOUND_MESSAGE = "Profile not found.";
     private final ProfileRepository profileRepository;
+    private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final Random random = new Random();
 
@@ -46,16 +51,37 @@ public class ProfileService {
         profile.setGenderPreferenceMale(profileDTO.genderPreferenceMale());
         profile.setBio(profileDTO.bio());
         profile.setPicture(profileDTO.picture());
+        profile.setProfileActive(true);
 
         profileRepository.save(profile);
     }
 
-    public ProfileDTO getRandomProfile() {
-        List<Profile> profiles = profileRepository.findAll();
-        if (profiles.isEmpty()) {
-            throw new ApplicationException("No profiles available.");
+    public ProfileDTO getRandomProfile(Integer userId) {
+        // Retrieve the current user's profile
+        Profile currentUserProfile = profileRepository.findById(userId)
+                .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
+
+        // Retrieve active profiles
+        List<Profile> activeProfiles = profileRepository.findByProfileActiveTrue();
+        if (activeProfiles.isEmpty()) {
+            throw new ApplicationException("No active profiles available.");
         }
-        Profile randomProfile = profiles.get(random.nextInt(profiles.size()));
+
+        // Filter profiles based on user's gender preference using a for loop
+        List<Profile> matchingProfiles = new ArrayList<>();
+        for (Profile profile : activeProfiles) {
+            if (profile.isGenderMale() == currentUserProfile.isGenderPreferenceMale()
+                    && !Objects.equals(profile.getId(), currentUserProfile.getId())) {
+                matchingProfiles.add(profile);
+            }
+        }
+
+        if (matchingProfiles.isEmpty()) {
+            throw new ApplicationException("No matching profiles based on user's gender preference.");
+        }
+
+        // Select a random profile from the matching profiles
+        Profile randomProfile = matchingProfiles.get(random.nextInt(matchingProfiles.size()));
         return userMapper.profileToProfileDTO(randomProfile);
     }
 }
