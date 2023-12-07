@@ -12,6 +12,9 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -75,5 +78,16 @@ public class ProfileService {
 
         Profile randomProfile = matchingProfiles.get(random.nextInt(matchingProfiles.size()));
         return userMapper.profileToProfileDTO(randomProfile);
+    }
+
+    public int getAge(Date date) {
+        LocalDate birthDate = date.toLocalDate();
+        LocalDate now = LocalDate.now();
+        Period p = Period.between(birthDate, now);
+        return p.getYears();
+    }
+
+    public String getFullName(String firstName, String lastName) {
+        return firstName + " " + lastName;
     }
 }

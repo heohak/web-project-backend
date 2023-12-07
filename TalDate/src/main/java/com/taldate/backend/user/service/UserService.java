@@ -1,9 +1,11 @@
 package com.taldate.backend.user.service;
 
 import com.taldate.backend.exception.ApplicationException;
+import com.taldate.backend.profile.entity.Profile;
+import com.taldate.backend.profile.repository.ProfileRepository;
+import com.taldate.backend.profile.service.ProfileService;
 import com.taldate.backend.user.dto.*;
 import com.taldate.backend.user.entity.User;
-import com.taldate.backend.user.mapper.UserMapper;
 import com.taldate.backend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
+    private final ProfileService profileService;
     private final PasswordEncoder passwordEncoder;
 
     private User getCurrentUser() {
@@ -58,6 +62,11 @@ public class UserService {
         User user = getCurrentUser();
         log.info("Updating first name for user with ID: {}", user.getId());
         user.setFirstName(dto.newFirstName());
+
+        Profile profile = user.getProfile();
+        profile.setName(profileService.getFullName(user.getFirstName(), user.getLastName()));
+        profileRepository.save(profile);
+
         userRepository.save(user);
     }
 
@@ -66,6 +75,11 @@ public class UserService {
         User user = getCurrentUser();
         log.info("Updating last name for user with ID: {}", user.getId());
         user.setLastName(dto.newLastName());
+
+        Profile profile = user.getProfile();
+        profile.setName(profileService.getFullName(user.getFirstName(), user.getLastName()));
+        profileRepository.save(profile);
+
         userRepository.save(user);
     }
 
@@ -74,6 +88,11 @@ public class UserService {
         User user = getCurrentUser();
         log.info("Updating date of birth for user with ID: {}", user.getId());
         user.setDateOfBirth(dto.newDateOfBirth());
+
+        Profile profile = user.getProfile();
+        profile.setAge(profileService.getAge(dto.newDateOfBirth()));
+        profileRepository.save(profile);
+
         userRepository.save(user);
     }
 
