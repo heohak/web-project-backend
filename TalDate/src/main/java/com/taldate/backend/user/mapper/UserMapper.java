@@ -10,10 +10,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    UserDTO userToUserDTO(User user);
-    @Mapping(target = "profile", ignore = true)
-    @Mapping(target = "id", ignore = true)
-    User userDTOtoUser(UserDTO userDTO);
     @Mapping(target = "profile", ignore = true)
     @Mapping(target = "passwordHash", ignore = true)
     @Mapping(target = "id", ignore = true)
