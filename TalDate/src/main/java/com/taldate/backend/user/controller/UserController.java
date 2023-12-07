@@ -1,8 +1,9 @@
 package com.taldate.backend.user.controller;
 
-import com.taldate.backend.user.dto.UserDTO;
+import com.taldate.backend.user.dto.*;
 import com.taldate.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,35 +15,54 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    @PutMapping("/email")
+    public void updateEmail(@RequestBody UpdateEmailDTO dto) {
+        userService.updateEmail(dto);
+    }
+
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<UserDTO>> getUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) String search
+    ) {
+        return ResponseEntity.ok(userService.getUsers(page, size, sortBy, sortDir, search));
+    }
+
     @GetMapping()
     public List<UserDTO> getUsers() {
         return userService.getAllUsers();
     }
 
-    @GetMapping("/{id}")
-    public UserDTO getUserById(@PathVariable Integer id) {
-        return userService.getUserById(id);
+    @PutMapping("/password")
+    public void updatePassword(@RequestBody UpdatePasswordDTO dto) {
+        userService.updatePassword(dto);
     }
 
-    @PutMapping("/password/{id}")
-    public UserDTO updatePassword(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
-        return userService.updatePassword(id, userDTO);
+    @PutMapping("/firstName")
+    public void updateFirstName(@RequestBody UpdateFirstNameDTO dto) {
+        userService.updateFirstName(dto);
     }
 
-    @PutMapping("/email/{id}")
-    public UserDTO updateEmail(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
-        return userService.updateEmail(id, userDTO);
+    @PutMapping("/lastName")
+    public void updateLastName(@RequestBody UpdateLastNameDTO dto) {
+        userService.updateLastName(dto);
     }
 
-    @PutMapping("/name/{id}")
-    public UserDTO updateName(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
-        return userService.updateName(id, userDTO);
+    @PutMapping("/dateOfBirth")
+    public void updateDateOfBirth(@RequestBody UpdateDateOfBirthDTO dto) {
+        userService.updateDateOfBirth(dto);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
-        userService.deleteUserByID(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/gender")
+    public void updateGender(@RequestBody UpdateGenderDTO dto) {
+        userService.updateGender(dto);
     }
 
+    @DeleteMapping
+    public void deleteUser() {
+        userService.deleteUser();
+    }
 }
