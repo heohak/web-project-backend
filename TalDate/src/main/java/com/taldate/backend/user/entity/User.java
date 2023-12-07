@@ -1,5 +1,6 @@
 package com.taldate.backend.user.entity;
 
+import com.taldate.backend.match.entity.Match;
 import com.taldate.backend.profile.entity.Profile;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -40,6 +43,9 @@ public class User {
 
     @Column
     private boolean genderMale;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Match> matches = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
