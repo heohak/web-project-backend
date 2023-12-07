@@ -6,11 +6,13 @@ import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.user.dto.UserDTO;
 import com.taldate.backend.user.entity.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    UserDTO userToUserDTO(User user);
-    User userDTOtoUser(UserDTO userDTO);
+    @Mapping(target = "profile", ignore = true)
+    @Mapping(target = "passwordHash", ignore = true)
+    @Mapping(target = "id", ignore = true)
     User registerDTOtoUser(RegisterDTO registerDTO);
 
     ProfileDTO profileToProfileDTO(Profile profile);
