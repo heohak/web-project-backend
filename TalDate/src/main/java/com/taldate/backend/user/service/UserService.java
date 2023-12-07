@@ -7,6 +7,8 @@ import com.taldate.backend.user.mapper.UserMapper;
 import com.taldate.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,11 @@ public class UserService {
     private static final String USER_NOT_FOUND_MESSAGE = "User not found";
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+
+    public Page<UserDTO> getUsers(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(userMapper::userToUserDTO);
+    }
 
     public List<UserDTO> getAllUsers() {
         log.info("Retrieving all users");
