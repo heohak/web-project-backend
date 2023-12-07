@@ -8,8 +8,13 @@ import com.taldate.backend.user.mapper.UserMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,31 +24,29 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
-    private static final String PROFILE_NOT_FOUND_MESSAGE = "Profile not found.";
     private final ProfileRepository profileRepository;
     private final UserMapper userMapper;
     private final Random random = new Random();
 
-    public List<ProfileDTO> getAllProfiles() {
-        log.info("Retrieving all profiles");
-        List<Profile> profiles = profileRepository.findAll();
-        return profiles.stream()
-                .map(userMapper::profileToProfileDTO)
-                .toList();
+    private Profile getCurrentProfile() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        int id = (int) (context.getAuthentication().getPrincipal());
+
+        return profileRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("Profile not found while in service layer");
+                    return new ApplicationException("Profile not found");
+                });
     }
 
-    public ProfileDTO getProfileById(Integer id) {
-        log.info("Retrieving profile with ID: {}", id);
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
-        return userMapper.profileToProfileDTO(profile);
+    public ProfileDTO getCurrentProfileDTO() {
+        return userMapper.profileToProfileDTO(getCurrentProfile());
     }
 
     @Transactional
-    public void updateProfile(int id, ProfileDTO profileDTO) {
-        log.info("Updating profile for ID: {}", id);
-        Profile profile = profileRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
+    public void updateProfile(ProfileDTO profileDTO) {
+        Profile profile = getCurrentProfile();
+        log.info("Updating profile for ID: {}", profile.getId());
 
         profile.setGenderPreferenceMale(profileDTO.genderPreferenceMale());
         profile.setBio(profileDTO.bio());
@@ -53,32 +56,38 @@ public class ProfileService {
         profileRepository.save(profile);
     }
 
-    public ProfileDTO getRandomProfile(Integer userId) {
-        // Retrieve the current user's profile
-        Profile currentUserProfile = profileRepository.findById(userId)
-                .orElseThrow(() -> new ApplicationException(PROFILE_NOT_FOUND_MESSAGE));
+    public ProfileDTO getRandomProfile() {
+        Profile profile = getCurrentProfile();
+        log.info("Getting random profile for ID: {}", profile.getId());
 
-        // Retrieve active profiles
         List<Profile> activeProfiles = profileRepository.findByProfileActiveTrue();
         if (activeProfiles.isEmpty()) {
-            throw new ApplicationException("No active profiles available.");
+            throw new ApplicationException("No active profiles available, please try again later");
         }
 
-        // Filter profiles based on user's gender preference using a for loop
         List<Profile> matchingProfiles = new ArrayList<>();
-        for (Profile profile : activeProfiles) {
-            if (profile.isGenderMale() == currentUserProfile.isGenderPreferenceMale()
-                    && !Objects.equals(profile.getId(), currentUserProfile.getId())) {
-                matchingProfiles.add(profile);
+        for (Profile other : activeProfiles) {
+            if (other.isGenderMale() == profile.isGenderPreferenceMale()
+                    && !Objects.equals(other.getId(), profile.getId())) {
+                matchingProfiles.add(other);
             }
         }
-
         if (matchingProfiles.isEmpty()) {
-            throw new ApplicationException("No matching profiles based on user's gender preference.");
+            throw new ApplicationException("No matching profiles available, please try again later");
         }
 
-        // Select a random profile from the matching profiles
         Profile randomProfile = matchingProfiles.get(random.nextInt(matchingProfiles.size()));
         return userMapper.profileToProfileDTO(randomProfile);
+    }
+
+    public int getAge(Date date) {
+        LocalDate birthDate = date.toLocalDate();
+        LocalDate now = LocalDate.now();
+        Period p = Period.between(birthDate, now);
+        return p.getYears();
+    }
+
+    public String getFullName(String firstName, String lastName) {
+        return firstName + " " + lastName;
     }
 }

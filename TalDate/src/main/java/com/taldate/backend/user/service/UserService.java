@@ -1,27 +1,41 @@
 package com.taldate.backend.user.service;
 
 import com.taldate.backend.exception.ApplicationException;
-import com.taldate.backend.user.dto.UserDTO;
+import com.taldate.backend.profile.entity.Profile;
+import com.taldate.backend.profile.repository.ProfileRepository;
+import com.taldate.backend.profile.service.ProfileService;
+import com.taldate.backend.user.dto.*;
 import com.taldate.backend.user.entity.User;
-import com.taldate.backend.user.mapper.UserMapper;
 import com.taldate.backend.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private static final String USER_NOT_FOUND_MESSAGE = "User not found";
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
+    private final ProfileRepository profileRepository;
+    private final ProfileService profileService;
+    private final PasswordEncoder passwordEncoder;
 
+    private User getCurrentUser() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        int id = (int) (context.getAuthentication().getPrincipal());
+        return userRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("User not found while in service layer");
+                    return new ApplicationException("User not found");
+                });
     public Page<UserDTO> getUsers(int page, int size, String sortBy, String sortDir, String search) {
         PageRequest pageable = createPageRequest(page, size, sortBy, sortDir);
 
@@ -60,49 +74,73 @@ public class UserService {
                 .toList();
     }
 
-    public UserDTO getUserById(Integer id) {
-        log.info("Retrieving user with ID: {}", id);
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_MESSAGE));
-        return userMapper.userToUserDTO(user);
-    }
-
-    public UserDTO updatePassword(Integer id, UserDTO userDTO) {
-        log.info("Updating password for user with ID: {}", id);
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_MESSAGE));
-        user.setPasswordHash(userDTO.passwordHash());
+    @Transactional
+    public void updateEmail(UpdateEmailDTO dto) {
+        User user = getCurrentUser();
+        log.info("Updating email for user with ID: {}", user.getId());
+        user.setEmail(dto.newEmail());
         userRepository.save(user);
-        return userMapper.userToUserDTO(user);
     }
 
-    public UserDTO updateEmail(Integer id, UserDTO userDTO) {
-        log.info("Updating email for user with ID: {}", id);
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_MESSAGE));
-        user.setEmail(userDTO.email());
+    @Transactional
+    public void updatePassword(UpdatePasswordDTO dto) {
+        User user = getCurrentUser();
+        log.info("Updating password for user with ID: {}", user.getId());
+        user.setPasswordHash(passwordEncoder.encode(dto.newPassword()));
         userRepository.save(user);
-        return userMapper.userToUserDTO(user);
     }
 
-    public UserDTO updateName(Integer id, UserDTO userDTO) {
-        log.info("Updating name for user with ID: {}", id);
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ApplicationException(USER_NOT_FOUND_MESSAGE));
-        user.setFirstName(userDTO.firstName());
-        user.setLastName(userDTO.lastName());
+    @Transactional
+    public void deleteUser() {
+        User user = getCurrentUser();
+        log.info("Deleting user with ID: {}", user.getId());
+        userRepository.deleteById(user.getId());
+    }
+
+    @Transactional
+    public void updateFirstName(UpdateFirstNameDTO dto) {
+        User user = getCurrentUser();
+        log.info("Updating first name for user with ID: {}", user.getId());
+        user.setFirstName(dto.newFirstName());
+
+        Profile profile = user.getProfile();
+        profile.setName(profileService.getFullName(user.getFirstName(), user.getLastName()));
+        profileRepository.save(profile);
+
         userRepository.save(user);
-        return userMapper.userToUserDTO(user);
     }
 
-    public void deleteUserByID(Integer id) {
-        log.info("Deleting user with ID: {}", id);
-        userRepository.findById(id).ifPresentOrElse(
-                user -> userRepository.deleteById(id),
-                () -> {
-                    throw new ApplicationException(USER_NOT_FOUND_MESSAGE);
-                }
-        );
-        userRepository.deleteById(id);
+    @Transactional
+    public void updateLastName(UpdateLastNameDTO dto) {
+        User user = getCurrentUser();
+        log.info("Updating last name for user with ID: {}", user.getId());
+        user.setLastName(dto.newLastName());
+
+        Profile profile = user.getProfile();
+        profile.setName(profileService.getFullName(user.getFirstName(), user.getLastName()));
+        profileRepository.save(profile);
+
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateDateOfBirth(UpdateDateOfBirthDTO dto) {
+        User user = getCurrentUser();
+        log.info("Updating date of birth for user with ID: {}", user.getId());
+        user.setDateOfBirth(dto.newDateOfBirth());
+
+        Profile profile = user.getProfile();
+        profile.setAge(profileService.getAge(dto.newDateOfBirth()));
+        profileRepository.save(profile);
+
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateGender(UpdateGenderDTO dto) {
+        User user = getCurrentUser();
+        log.info("Updating gender for user with ID: {}", user.getId());
+        user.setGenderMale(dto.genderMale());
+        userRepository.save(user);
     }
 }
