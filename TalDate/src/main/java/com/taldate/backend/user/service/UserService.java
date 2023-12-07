@@ -6,18 +6,21 @@ import com.taldate.backend.profile.repository.ProfileRepository;
 import com.taldate.backend.profile.service.ProfileService;
 import com.taldate.backend.user.dto.*;
 import com.taldate.backend.user.entity.User;
+import com.taldate.backend.user.mapper.UserMapper;
 import com.taldate.backend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -27,6 +30,7 @@ public class UserService {
     private final ProfileRepository profileRepository;
     private final ProfileService profileService;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     private User getCurrentUser() {
         SecurityContext context = SecurityContextHolder.getContext();
@@ -36,6 +40,8 @@ public class UserService {
                     log.error("User not found while in service layer");
                     return new ApplicationException("User not found");
                 });
+    }
+
     public Page<UserDTO> getUsers(int page, int size, String sortBy, String sortDir, String search) {
         PageRequest pageable = createPageRequest(page, size, sortBy, sortDir);
 

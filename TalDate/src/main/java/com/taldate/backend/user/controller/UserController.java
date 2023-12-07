@@ -7,14 +7,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
     @PutMapping("/email")
     public void updateEmail(@RequestBody UpdateEmailDTO dto) {
         userService.updateEmail(dto);
+    }
 
     @GetMapping("/paginated")
     public ResponseEntity<Page<UserDTO>> getUsers(
