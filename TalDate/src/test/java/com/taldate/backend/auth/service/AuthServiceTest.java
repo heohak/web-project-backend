@@ -8,6 +8,7 @@ import com.taldate.backend.auth.jwt.JwtUtils;
 import com.taldate.backend.exception.ApplicationException;
 import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.repository.ProfileRepository;
+import com.taldate.backend.profile.service.ProfileService;
 import com.taldate.backend.user.entity.User;
 import com.taldate.backend.user.mapper.UserMapper;
 import com.taldate.backend.user.repository.UserRepository;
@@ -37,6 +38,9 @@ class AuthServiceTest {
 
     @Mock
     private ProfileRepository profileRepository;
+
+    @Mock
+    private ProfileService profileService;
 
     @Mock
     private JwtUtils jwtUtils;
@@ -70,13 +74,12 @@ class AuthServiceTest {
 
         when(userRepository.findByEmail(registerDto.email().toLowerCase())).thenReturn(Optional.empty());
         when(userMapper.registerDTOtoUser(registerDto)).thenReturn(user);
-
-        when(profileRepository.save(any(Profile.class))).thenReturn(profile);
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(profileService.getFullName(registerDto.firstName(), registerDto.lastName())).thenReturn("John Doe");
+        when(profileService.getAge(registerDto.dateOfBirth())).thenReturn(30);
 
         assertDoesNotThrow(() -> authService.register(registerDto));
-        verify(profileRepository).save(any(Profile.class));
         verify(userRepository).save(any(User.class));
+        verify(profileRepository).save(any(Profile.class));
     }
 
     @Test

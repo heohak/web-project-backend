@@ -1,168 +1,176 @@
 package com.taldate.backend.user.service;
 
-import com.taldate.backend.user.dto.UserDTO;
+import com.taldate.backend.profile.service.ProfileService;
+import com.taldate.backend.user.dto.*;
 import com.taldate.backend.user.entity.User;
 import com.taldate.backend.user.mapper.UserMapper;
 import com.taldate.backend.user.repository.UserRepository;
+import com.taldate.backend.profile.entity.Profile;
+import com.taldate.backend.profile.repository.ProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private ProfileRepository profileRepository;
+    @Mock
+    private UserMapper userMapper;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private ProfileService profileService;
     @InjectMocks
     private UserService userService;
 
-    @Spy
-    private UserMapper userMapper;
-
-    private User user1, user2;
-    private UserDTO userDTO1, userDTO2;
+    private User currentUser;
+    private Profile currentProfile;
+    private UserDTO userDTO;
 
     @BeforeEach
     void setUp() {
-        Date sampleDateOfBirth = Date.valueOf("1990-01-01");
-        user1 = new User();
-        user1.setId(1);
-        user1.setFirstName("John");
-        user1.setLastName("Doe");
-        user1.setEmail("john.doe@example.com");
-        user1.setPasswordHash("hashedPassword1");
-        user1.setDateOfBirth(sampleDateOfBirth);
+        currentUser = new User();
+        currentUser.setId(1);
+        currentUser.setFirstName("John");
+        currentUser.setLastName("Doe");
+        currentUser.setEmail("john.doe@example.com");
+        currentUser.setPasswordHash("hashedPassword");
+        currentUser.setDateOfBirth(Date.valueOf("1990-01-01"));
+        currentUser.setGenderMale(true);
 
-        user2 = new User();
-        user2.setId(2);
-        user2.setFirstName("Jane");
-        user2.setLastName("Smith");
-        user2.setEmail("jane.smith@example.com");
-        user2.setPasswordHash("hashedPassword2");
-        user2.setDateOfBirth(sampleDateOfBirth);
+        currentProfile = new Profile(); // Initialize with test data
+        currentUser.setProfile(currentProfile);
 
-        userDTO1 = UserDTO.builder()
+        userDTO = UserDTO.builder() // Initialize with corresponding DTO data
                 .firstName("John")
                 .lastName("Doe")
                 .email("john.doe@example.com")
-                .passwordHash("hashedPassword1")
-                .dateOfBirth(sampleDateOfBirth)
+                .passwordHash("hashedPassword")
+                .dateOfBirth(Date.valueOf("1990-01-01"))
                 .genderMale(true)
                 .build();
-        userDTO2 = UserDTO.builder()
-                .firstName("Jane")
-                .lastName("Smith")
-                .email("jane.smith@example.com")
-                .passwordHash("hashedPassword2")
-                .dateOfBirth(sampleDateOfBirth)
-                .genderMale(false)
-                .build();
 
+        // Mock SecurityContextHolder
+        SecurityContext securityContext = mock(SecurityContext.class);
+        Authentication authentication = mock(Authentication.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(1); // Assuming current user has ID 1
+        SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
-    void getAllUsers() {
+    void getUsers_withPaginationAndSearch() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<User> page = new PageImpl<>(Arrays.asList(currentUser));
+        when(userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                "search", "search", "search", pageable)).thenReturn(page);
+        when(userMapper.userToUserDTO(any(User.class))).thenReturn(userDTO);
 
-        List<User> users = Arrays.asList(user1, user2);
-        List<UserDTO> userDTOs = Arrays.asList(userDTO1, userDTO2);
+        Page<UserDTO> result = userService.getUsers(0, 10, "firstName", "asc", "search");
 
-        when(userRepository.findAll()).thenReturn(users);
-        when(userMapper.userToUserDTO(user1)).thenReturn(userDTO1);
-        when(userMapper.userToUserDTO(user2)).thenReturn(userDTO2);
-
-        List<UserDTO> result = userService.getAllUsers();
-
-        assertEquals(userDTOs, result);
-
+        assertEquals(1, result.getContent().size());
+        assertEquals(userDTO, result.getContent().get(0));
     }
 
     @Test
-    void getUserById() {
-        when(userRepository.findById(1)).thenReturn(Optional.of(user1));
-        when(userMapper.userToUserDTO(user1)).thenReturn(userDTO1);
+    void updateEmail_Success() {
+        when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
-        UserDTO result = userService.getUserById(1);
+        UpdateEmailDTO dto = new UpdateEmailDTO("new.email@example.com");
+        userService.updateEmail(dto);
 
-        assertEquals(userDTO1, result);
+        assertEquals("new.email@example.com", currentUser.getEmail());
+        verify(userRepository).save(currentUser);
     }
 
     @Test
-    void updatePassword() {
-        Integer userId = 1;
-        String newPassword = "newHashedPassword";
-        UserDTO updatedUserDTO = UserDTO.builder()
-                .passwordHash(newPassword)
-                .build();
+    void updatePassword_Success() {
+        when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
+        when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user1));
-        when(userMapper.userToUserDTO(user1)).thenReturn(updatedUserDTO);
+        UpdatePasswordDTO dto = new UpdatePasswordDTO("newPassword");
+        userService.updatePassword(dto);
 
-        UserDTO result = userService.updatePassword(userId, updatedUserDTO);
-
-        assertEquals(newPassword, result.passwordHash());
-        verify(userRepository).save(user1);
-
+        assertEquals("encodedNewPassword", currentUser.getPasswordHash());
+        verify(userRepository).save(currentUser);
     }
 
     @Test
-    void updateEmail() {
-        Integer userId = 1;
-        String newEmail = "new.email@example.com";
-        UserDTO updatedUserDTO = UserDTO.builder()
-                .email(newEmail)
-                .build();
+    void deleteUser_Success() {
+        when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user1));
-        when(userMapper.userToUserDTO(user1)).thenReturn(updatedUserDTO);
+        userService.deleteUser();
 
-        UserDTO result = userService.updateEmail(userId, updatedUserDTO);
-
-        assertEquals(newEmail, result.email());
-        verify(userRepository).save(user1);
+        verify(userRepository).deleteById(currentUser.getId());
     }
 
     @Test
-    void updateName() {
-        Integer userId = 1;
-        String newFirstName = "NewFirstName";
-        String newLastName = "NewLastName";
-        UserDTO updatedUserDTO = UserDTO.builder()
-                .firstName(newFirstName)
-                .lastName(newLastName)
-                .build();
+    void updateFirstName_Success() {
+        when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user1));
-        when(userMapper.userToUserDTO(user1)).thenReturn(updatedUserDTO);
+        UpdateFirstNameDTO dto = new UpdateFirstNameDTO("NewFirstName");
+        userService.updateFirstName(dto);
 
-        UserDTO result = userService.updateName(userId, updatedUserDTO);
-
-        assertEquals(newFirstName, result.firstName());
-        assertEquals(newLastName, result.lastName());
-        verify(userRepository).save(user1);
+        assertEquals("NewFirstName", currentUser.getFirstName());
+        verify(userRepository).save(currentUser);
+        verify(profileRepository).save(currentProfile);
     }
 
     @Test
-    void deleteUserByID() {
-        Integer userId = 1;
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user1));
+    void updateLastName_Success() {
+        when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
-        userService.deleteUserByID(userId);
+        UpdateLastNameDTO dto = new UpdateLastNameDTO("NewLastName");
+        userService.updateLastName(dto);
 
-        verify(userRepository).deleteById(userId);
-        assertDoesNotThrow(() -> userService.deleteUserByID(userId), "Method should not throw an exception");
+        assertEquals("NewLastName", currentUser.getLastName());
+        verify(userRepository).save(currentUser);
+        verify(profileRepository).save(currentProfile);
+    }
+
+    @Test
+    void updateDateOfBirth_Success() {
+        Date newDateOfBirth = Date.valueOf("2000-01-01");
+        when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
+
+        UpdateDateOfBirthDTO dto = new UpdateDateOfBirthDTO(newDateOfBirth);
+        userService.updateDateOfBirth(dto);
+
+        assertEquals(newDateOfBirth, currentUser.getDateOfBirth());
+        verify(userRepository).save(currentUser);
+        verify(profileRepository).save(currentProfile);
+    }
+
+    @Test
+    void updateGender_Success() {
+        when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
+
+        UpdateGenderDTO dto = new UpdateGenderDTO(true);
+        userService.updateGender(dto);
+
+        assertTrue(currentUser.isGenderMale());
+        verify(userRepository).save(currentUser);
     }
 }

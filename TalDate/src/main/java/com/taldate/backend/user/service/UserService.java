@@ -148,13 +148,6 @@ public class UserService {
         log.info("Updating gender for user with ID: {}", user.getId());
         user.setGenderMale(dto.genderMale());
         userRepository.save(user);
-    public void deleteUserByID(Integer id) {
-        log.info("Deleting user with ID: {}", id);
-        userRepository.findById(id).ifPresentOrElse(
-                user -> userRepository.deleteById(id),
-                () -> {
-                    throw new ApplicationException(USER_NOT_FOUND_MESSAGE);
-                }
-        );
     }
 }
+
