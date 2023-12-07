@@ -3,16 +3,37 @@ package com.taldate.backend.user.controller;
 import com.taldate.backend.user.dto.*;
 import com.taldate.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
     @PutMapping("/email")
     public void updateEmail(@RequestBody UpdateEmailDTO dto) {
         userService.updateEmail(dto);
+    }
+
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<UserDTO>> getUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) String search
+    ) {
+        return ResponseEntity.ok(userService.getUsers(page, size, sortBy, sortDir, search));
+    }
+
+    @GetMapping()
+    public List<UserDTO> getUsers() {
+        return userService.getAllUsers();
     }
 
     @PutMapping("/password")
