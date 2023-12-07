@@ -8,7 +8,9 @@ import com.taldate.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,9 +22,34 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public Page<UserDTO> getUsers(Pageable pageable) {
+    public Page<UserDTO> getUsers(int page, int size, String sortBy, String sortDir, String search) {
+        PageRequest pageable = createPageRequest(page, size, sortBy, sortDir);
+
+        if (search != null && !search.trim().isEmpty()) {
+            return searchUsers(search, pageable);
+        } else {
+            return findAllUsers(pageable);
+        }
+    }
+
+    private Page<UserDTO> findAllUsers(Pageable pageable) {
         return userRepository.findAll(pageable)
                 .map(userMapper::userToUserDTO);
+    }
+
+    private Page<UserDTO> searchUsers(String search, Pageable pageable) {
+        return userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                        search, search, search, pageable)
+                .map(userMapper::userToUserDTO);
+    }
+
+    private PageRequest createPageRequest(int page, int size, String sortBy, String sortDir) {
+        if (!"none".equalsIgnoreCase(sortDir)) {
+            Sort.Direction direction = Sort.Direction.fromString(sortDir.toUpperCase());
+            return PageRequest.of(page, size, direction, sortBy);
+        } else {
+            return PageRequest.of(page, size);
+        }
     }
 
     public List<UserDTO> getAllUsers() {
