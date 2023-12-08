@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -75,24 +76,42 @@ class UserServiceTest {
         // Mock SecurityContextHolder
         SecurityContext securityContext = mock(SecurityContext.class);
         Authentication authentication = mock(Authentication.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(1); // Assuming current user has ID 1
+        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
+        lenient().when(authentication.getPrincipal()).thenReturn(1); // Assuming current user has ID 1
         SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
-    void getUsers_withPaginationAndSearch() {
-        PageRequest pageable = PageRequest.of(0, 10);
+    void getAllUsers() {
+
+        List<User> users = Arrays.asList(currentUser);
+        List<UserDTO> userDTOs = Arrays.asList(userDTO);
+
+        when(userRepository.findAll()).thenReturn(users);
+        when(userMapper.userToUserDTO(currentUser)).thenReturn(userDTO);
+
+        List<UserDTO> result = userService.getAllUsers();
+
+        assertEquals(userDTOs, result);
+
+        }
+
+    @Test
+    void getUsers_WithoutSearch() {
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by("firstName").ascending());
         Page<User> page = new PageImpl<>(Arrays.asList(currentUser));
-        when(userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
-                "search", "search", "search", pageable)).thenReturn(page);
+
+        when(userRepository.findAll(pageable)).thenReturn(page);
         when(userMapper.userToUserDTO(any(User.class))).thenReturn(userDTO);
 
-        Page<UserDTO> result = userService.getUsers(0, 10, "firstName", "asc", "search");
+        Page<UserDTO> result = userService.getUsers(0, 10, "firstName", "asc", "");
 
         assertEquals(1, result.getContent().size());
         assertEquals(userDTO, result.getContent().get(0));
+        verify(userRepository).findAll(pageable);
     }
+
+
 
     @Test
     void updateEmail_Success() {
