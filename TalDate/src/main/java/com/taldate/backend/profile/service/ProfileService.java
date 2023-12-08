@@ -64,7 +64,7 @@ public class ProfileService {
         Profile profile = getCurrentProfile();
         log.info("Updating gender preference for ID: {}", profile.getId());
 
-        profile.setGenderPreferenceMale(dto.genderPreferenceMale());
+        profile.setGenderPreferenceMale(dto.newGenderPreferenceMale());
         profileRepository.save(profile);
     }
 
@@ -73,7 +73,7 @@ public class ProfileService {
         Profile profile = getCurrentProfile();
         log.info("Updating bio for ID: {}", profile.getId());
 
-        profile.setBio(dto.bio());
+        profile.setBio(dto.newBio());
         profileRepository.save(profile);
     }
 
@@ -82,8 +82,8 @@ public class ProfileService {
         Profile profile = getCurrentProfile();
         log.info("Updating profile picture for ID: {}", profile.getId());
 
-        profile.setPicture(dto.profilePicture());
-
+        profile.setPicture(dto.newProfilePicture());
+        profile.setProfileActive(true);
         profileRepository.save(profile);
     }
 
