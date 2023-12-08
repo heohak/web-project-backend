@@ -20,17 +20,17 @@ public class ProfileController {
         return profileService.getCurrentProfileDTO();
     }
 
-    @PutMapping
+    @PutMapping("/genderPreference")
     public void updateGenderPreference(@RequestBody UpdateGenderPreferenceDTO dto) {
         profileService.updateGenderPreference(dto);
     }
 
-    @PutMapping
+    @PutMapping("/bio")
     public void updateBio(@RequestBody UpdateBioDTO dto) {
         profileService.updateBio(dto);
     }
 
-    @PutMapping
+    @PutMapping("/profilePicture")
     public void updateProfilePicture(@RequestBody UpdateProfilePictureDTO dto) {
         profileService.updateProfilePicture(dto);
     }
