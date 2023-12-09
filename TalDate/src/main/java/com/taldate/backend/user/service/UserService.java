@@ -110,7 +110,7 @@ public class UserService {
         user.setFirstName(dto.newFirstName());
 
         Profile profile = user.getProfile();
-        profile.setName(profileService.getFullName(user.getFirstName(), user.getLastName()));
+        profile.setName(profileService.combineFullName(user.getFirstName(), user.getLastName()));
         profileRepository.save(profile);
 
         userRepository.save(user);
@@ -123,7 +123,7 @@ public class UserService {
         user.setLastName(dto.newLastName());
 
         Profile profile = user.getProfile();
-        profile.setName(profileService.getFullName(user.getFirstName(), user.getLastName()));
+        profile.setName(profileService.combineFullName(user.getFirstName(), user.getLastName()));
         profileRepository.save(profile);
 
         userRepository.save(user);
@@ -136,7 +136,7 @@ public class UserService {
         user.setDateOfBirth(dto.newDateOfBirth());
 
         Profile profile = user.getProfile();
-        profile.setAge(profileService.getAge(dto.newDateOfBirth()));
+        profile.setAge(profileService.calculateAge(dto.newDateOfBirth()));
         profileRepository.save(profile);
 
         userRepository.save(user);

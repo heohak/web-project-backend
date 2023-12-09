@@ -2,6 +2,9 @@ package com.taldate.backend.profile.service;
 
 import com.taldate.backend.exception.ApplicationException;
 import com.taldate.backend.profile.dto.ProfileDTO;
+import com.taldate.backend.profile.dto.UpdateBioDTO;
+import com.taldate.backend.profile.dto.UpdateGenderPreferenceDTO;
+import com.taldate.backend.profile.dto.UpdateProfilePictureDTO;
 import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.repository.ProfileRepository;
 import com.taldate.backend.user.mapper.UserMapper;
@@ -56,6 +59,34 @@ public class ProfileService {
         profileRepository.save(profile);
     }
 
+    @Transactional
+    public void updateGenderPreference(UpdateGenderPreferenceDTO dto) {
+        Profile profile = getCurrentProfile();
+        log.info("Updating gender preference for ID: {}", profile.getId());
+
+        profile.setGenderPreferenceMale(dto.newGenderPreferenceMale());
+        profileRepository.save(profile);
+    }
+
+    @Transactional
+    public void updateBio(UpdateBioDTO dto) {
+        Profile profile = getCurrentProfile();
+        log.info("Updating bio for ID: {}", profile.getId());
+
+        profile.setBio(dto.newBio());
+        profileRepository.save(profile);
+    }
+
+    @Transactional
+    public void updateProfilePicture(UpdateProfilePictureDTO dto) {
+        Profile profile = getCurrentProfile();
+        log.info("Updating profile picture for ID: {}", profile.getId());
+
+        profile.setPicture(dto.newProfilePicture());
+        profile.setProfileActive(true);
+        profileRepository.save(profile);
+    }
+
     public ProfileDTO getRandomProfile() {
         Profile profile = getCurrentProfile();
         log.info("Getting random profile for ID: {}", profile.getId());
@@ -80,14 +111,15 @@ public class ProfileService {
         return userMapper.profileToProfileDTO(randomProfile);
     }
 
-    public int getAge(Date date) {
+    /* Helpers */
+    public int calculateAge(Date date) {
         LocalDate birthDate = date.toLocalDate();
         LocalDate now = LocalDate.now();
         Period p = Period.between(birthDate, now);
         return p.getYears();
     }
 
-    public String getFullName(String firstName, String lastName) {
+    public String combineFullName(String firstName, String lastName) {
         return firstName + " " + lastName;
     }
 }
