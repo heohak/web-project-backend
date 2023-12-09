@@ -10,7 +10,7 @@
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="pk_kanye_quotes"/>
             </column>
-            <column name="quote" type="varchar(255)">
+            <column name="quote" type="text">
                 <constraints nullable="false"/>
             </column>
         </createTable>
