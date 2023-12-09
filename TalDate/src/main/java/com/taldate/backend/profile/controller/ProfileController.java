@@ -1,10 +1,11 @@
 package com.taldate.backend.profile.controller;
 
 import com.taldate.backend.profile.dto.ProfileDTO;
+import com.taldate.backend.profile.dto.UpdateBioDTO;
+import com.taldate.backend.profile.dto.UpdateGenderPreferenceDTO;
+import com.taldate.backend.profile.dto.UpdateProfilePictureDTO;
 import com.taldate.backend.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,29 +17,26 @@ public class ProfileController {
 
     @GetMapping
     public ProfileDTO getCurrentProfile() {
-        SecurityContext context = SecurityContextHolder.getContext();
-        return profileService.getProfileById((int)(context.getAuthentication().getPrincipal()));
+        return profileService.getCurrentProfileDTO();
     }
 
-//    @GetMapping
-//    public List<ProfileDTO> getAllProfiles() {
-//        return profileService.getAllProfiles();
-//    }
+    @PutMapping("/genderPreference")
+    public void updateGenderPreference(@RequestBody UpdateGenderPreferenceDTO dto) {
+        profileService.updateGenderPreference(dto);
+    }
 
-//    @GetMapping("/{id}")
-//    public ProfileDTO getProfileById(@PathVariable Integer id) {
-//        return profileService.getProfileById(id);
-//    }
+    @PutMapping("/bio")
+    public void updateBio(@RequestBody UpdateBioDTO dto) {
+        profileService.updateBio(dto);
+    }
 
-    @PutMapping
-    public void updateProfile(@RequestBody ProfileDTO profileDTO) {
-        SecurityContext context = SecurityContextHolder.getContext();
-        profileService.updateProfile((int)(context.getAuthentication().getPrincipal()), profileDTO);
+    @PutMapping("/profilePicture")
+    public void updateProfilePicture(@RequestBody UpdateProfilePictureDTO dto) {
+        profileService.updateProfilePicture(dto);
     }
 
     @GetMapping("/random")
     public ProfileDTO getRandomProfile() {
-        SecurityContext context = SecurityContextHolder.getContext();
-        return profileService.getRandomProfile((int)(context.getAuthentication().getPrincipal()));
+        return profileService.getRandomProfile();
     }
 }
