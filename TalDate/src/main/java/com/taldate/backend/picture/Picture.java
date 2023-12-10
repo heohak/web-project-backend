@@ -14,6 +14,7 @@ public class Picture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column
+
+    @Column(name = "picture")
     private String encodedPicture;
 }
