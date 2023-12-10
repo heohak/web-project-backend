@@ -15,7 +15,4 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="2023-12-10 Change picture type to text" author="Henry Ohak">
-        <modifyDataType tableName="picture" columnName="picture" newDataType="text"/>
-    </changeSet>
 </databaseChangeLog>
