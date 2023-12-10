@@ -1,12 +1,11 @@
 package com.taldate.backend.match.entity;
 
-import com.taldate.backend.user.entity.User;
+import com.taldate.backend.profile.entity.Profile;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Objects;
 
 @Entity
 @Table(name = "match", schema = "public")
@@ -19,12 +18,12 @@ public class Match {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User userID1;
+    @JoinColumn(name = "profile_id_1", referencedColumnName = "id")
+    private Profile profile1;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User userID2;
+    @JoinColumn(name = "profile_id_2", referencedColumnName = "id")
+    private Profile profile2;
 
     @Column
     private boolean matchedByBoth;

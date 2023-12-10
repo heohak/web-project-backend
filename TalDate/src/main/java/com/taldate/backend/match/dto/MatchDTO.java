@@ -1,4 +1,4 @@
 package com.taldate.backend.match.dto;
 
-public class MatchDTO {
+public record MatchDTO(int id) {
 }

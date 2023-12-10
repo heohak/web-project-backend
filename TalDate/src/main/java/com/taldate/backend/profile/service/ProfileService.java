@@ -28,7 +28,7 @@ public class ProfileService {
     private final UserMapper userMapper;
     private final Random random = new Random();
 
-    private Profile getCurrentProfile() {
+    public Profile getCurrentProfile() {
         SecurityContext context = SecurityContextHolder.getContext();
         int id = (int) (context.getAuthentication().getPrincipal());
 
