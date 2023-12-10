@@ -28,4 +28,22 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="2023-12-10 Rename 'picture' column to 'picture_id'" author="Henry Ohak">
+        <renameColumn tableName="profile" oldColumnName="picture" newColumnName="picture_id"/>
+    </changeSet>
+    <changeSet id="2023-12-10 Change type of 'picture_id' column" author="Henry Ohak">
+        <modifyDataType tableName="profile" columnName="picture_id" newDataType="integer"/>
+    </changeSet>
+    <changeSet id="2023-12-10 Alter picture-id to nullable" author="Henry Ohak">
+        <dropNotNullConstraint tableName="profile" columnName="picture_id" columnDataType="integer"/>
+    </changeSet>
+    <changeSet id="2023-12-10 Add fk profile picture" author="Henry Ohak">
+        <addForeignKeyConstraint constraintName="fk_profile_picture"
+                                 baseTableName="profile"
+                                 baseColumnNames="picture_id"
+                                 referencedTableName="picture"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+
 </databaseChangeLog>
