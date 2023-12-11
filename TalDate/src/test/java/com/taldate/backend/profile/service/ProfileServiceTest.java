@@ -76,7 +76,7 @@ class ProfileServiceTest {
     }
 
     @Test
-    void getCurrentProfileDTO_Success() {
+    void get_current_profile_dto_success() {
         when(profileRepository.findById(1)).thenReturn(Optional.of(currentProfile));
         when(profileMapper.profileToProfileDTO(currentProfile)).thenReturn(profileDTO);
 
@@ -86,14 +86,14 @@ class ProfileServiceTest {
     }
 
     @Test
-    void getCurrentProfileDTO_ProfileNotFound() {
+    void get_current_profile_dto_profile_not_found() {
         when(profileRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(ApplicationException.class, () -> profileService.getCurrentProfileDTO());
     }
 
     @Test
-    void updateGenderPreference_Success() {
+    void update_gender_preference_success() {
         when(profileRepository.findById(1)).thenReturn(Optional.of(currentProfile));
         UpdateGenderPreferenceDTO dto = new UpdateGenderPreferenceDTO(false);
 
@@ -104,7 +104,7 @@ class ProfileServiceTest {
     }
 
     @Test
-    void updateBio_Success() {
+    void update_bio_success() {
         when(profileRepository.findById(1)).thenReturn(Optional.of(currentProfile));
         UpdateBioDTO dto = new UpdateBioDTO("New Bio");
 
@@ -115,7 +115,7 @@ class ProfileServiceTest {
     }
 
     @Test
-    void updateProfilePicture_Success() {
+    void update_profile_picture_success() {
         when(profileRepository.findById(1)).thenReturn(Optional.of(currentProfile));
         Picture newPicture = new Picture();
         newPicture.setEncodedPicture("encoded_picture_data");
@@ -133,7 +133,7 @@ class ProfileServiceTest {
     }
 
     @Test
-    void getRandomProfile_NoMatchingProfiles() {
+    void get_random_profile_no_matching_profiles() {
         currentProfile.setGenderPreferenceMale(true);
         when(profileRepository.findById(1)).thenReturn(Optional.of(currentProfile));
 
@@ -159,14 +159,14 @@ class ProfileServiceTest {
 
 
     @Test
-    void getRandomProfile_NoActiveProfiles() {
+    void get_random_profile_no_active_profiles() {
         lenient().when(profileRepository.findByProfileActiveTrue()).thenReturn(List.of());
 
         assertThrows(ApplicationException.class, () -> profileService.getRandomProfile());
     }
 
     @Test
-    void calculateAge_Success() {
+    void calculate_age_success() {
         LocalDate thirtyYearsAgo = LocalDate.now().minusYears(30);
         Date birthDate = Date.valueOf(thirtyYearsAgo);
 
@@ -176,7 +176,7 @@ class ProfileServiceTest {
     }
 
     @Test
-    void combineFullName_Success() {
+    void combine_full_name_success() {
         String firstName = "John";
         String lastName = "Doe";
 

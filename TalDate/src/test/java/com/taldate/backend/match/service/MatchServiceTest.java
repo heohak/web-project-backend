@@ -42,7 +42,7 @@ class MatchServiceTest {
 
 
     @Test
-    void match_Successful() {
+    void match_successful() {
         Profile currentProfile = new Profile();
         currentProfile.setId(1);
         Profile otherProfile = new Profile();
@@ -59,7 +59,7 @@ class MatchServiceTest {
     }
 
     @Test
-    void getAllMatches_Successful() {
+    void get_all_matches_successful() {
         Profile currentProfile = new Profile();
         currentProfile.setId(1);
         Profile otherProfile = new Profile();
@@ -82,7 +82,7 @@ class MatchServiceTest {
     }
 
     @Test
-    void match_WithNonExistentUser() {
+    void match_with_non_existent_user() {
         Profile currentProfile = new Profile();
         currentProfile.setId(1);
         when(profileService.getCurrentProfile()).thenReturn(currentProfile);
@@ -96,7 +96,7 @@ class MatchServiceTest {
     }
 
     @Test
-    void getAllMatches_NonExistentProfile() {
+    void get_all_matches_non_existent_profile() {
         int currentProfileId = 1;
         int otherProfileId = 2;
 

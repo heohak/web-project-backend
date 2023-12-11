@@ -79,7 +79,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getUsers_WithoutSearch() {
+    void get_users_without_search() {
         PageRequest pageable = PageRequest.of(0, 10, Sort.by("firstName").ascending());
         Page<User> page = new PageImpl<>(Arrays.asList(currentUser));
 
@@ -95,7 +95,7 @@ class UserServiceTest {
 
 
     @Test
-    void updateEmail_Success() {
+    void update_email_success() {
         when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
         UpdateEmailDTO dto = new UpdateEmailDTO("new.email@example.com");
@@ -106,7 +106,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updatePassword_Success() {
+    void update_password_success() {
         when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
         when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
 
@@ -119,7 +119,7 @@ class UserServiceTest {
 
 
     @Test
-    void updateFirstName_Success() {
+    void update_first_name_success() {
         when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
         UpdateFirstNameDTO dto = new UpdateFirstNameDTO("NewFirstName");
@@ -131,7 +131,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateLastName_Success() {
+    void update_last_name_success() {
         when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
         UpdateLastNameDTO dto = new UpdateLastNameDTO("NewLastName");
@@ -143,7 +143,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateDateOfBirth_Success() {
+    void update_date_of_birth_success() {
         Date newDateOfBirth = Date.valueOf("2000-01-01");
         when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
@@ -156,7 +156,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateGender_Success() {
+    void update_gender_success() {
         when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
         UpdateGenderDTO dto = new UpdateGenderDTO(true);
@@ -167,10 +167,10 @@ class UserServiceTest {
     }
 
     @Test
-    void updateGender_Unsuccessful() {
+    void update_gender_unsuccessful() {
         UpdateGenderDTO dto = new UpdateGenderDTO(true);
         assertThrows(ApplicationException.class, () -> {
-            userService.updateGender(dto);  // user not found while in service layer
+            userService.updateGender(dto);
         });
     }
 }

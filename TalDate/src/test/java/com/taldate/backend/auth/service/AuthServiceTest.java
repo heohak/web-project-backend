@@ -74,7 +74,7 @@ class AuthServiceTest {
 
 
     @Test
-    void register_Success() {
+    void register_success() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
         assertDoesNotThrow(() -> authService.register(registerDto));
@@ -83,7 +83,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void register_InvalidData_ThrowsException() {
+    void register_invalid_data_throws_exception() {
         RegisterDTO invalidDto = new RegisterDTO("John", "", "john@example.com", "password", java.sql.Date.valueOf("1990-01-01"), true);
 
         assertThrows(ApplicationException.class, () -> authService.register(invalidDto));
@@ -91,7 +91,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void register_DuplicateEmail_ThrowsException() {
+    void register_duplicate_email_throws_exception() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(new User()));
 
         assertThrows(ApplicationException.class, () -> authService.register(registerDto));
@@ -99,7 +99,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void login_Success() {
+    void login_success() {
         User mockUser = new User();
         mockUser.setId(1);
         mockUser.setPasswordHash(passwordEncoder.encode(loginDto.password()));
@@ -120,7 +120,7 @@ class AuthServiceTest {
 
 
     @Test
-    void login_WrongEmail_ThrowsException() {
+    void login_wrong_email_throws_exception() {
         when(userRepository.findByEmail(loginDto.email().toLowerCase())).thenReturn(Optional.empty());
 
         assertThrows(ApplicationException.class, () -> authService.login(loginDto));
