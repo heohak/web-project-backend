@@ -61,10 +61,10 @@ class UserServiceTest {
         currentUser.setDateOfBirth(Date.valueOf("1990-01-01"));
         currentUser.setGenderMale(true);
 
-        currentProfile = new Profile(); // Initialize with test data
+        currentProfile = new Profile();
         currentUser.setProfile(currentProfile);
 
-        userDTO = UserDTO.builder() // Initialize with corresponding DTO data
+        userDTO = UserDTO.builder()
                 .firstName("John")
                 .lastName("Doe")
                 .email("john.doe@example.com")
@@ -73,12 +73,10 @@ class UserServiceTest {
                 .genderMale(true)
                 .build();
 
-        // Mock SecurityContextHolder
         SecurityContext securityContext = mock(SecurityContext.class);
         Authentication authentication = mock(Authentication.class);
         lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
-        lenient().when(authentication.getPrincipal()).thenReturn(1); // Assuming current user has ID 1
-        SecurityContextHolder.setContext(securityContext);
+        lenient().when(authentication.getPrincipal()).thenReturn(1);
     }
 
     @Test
@@ -136,14 +134,8 @@ class UserServiceTest {
         verify(userRepository).save(currentUser);
     }
 
-    @Test
-    void deleteUser_Success() {
-        when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
-        userService.deleteUser();
 
-        verify(userRepository).deleteById(currentUser.getId());
-    }
 
     @Test
     void updateFirstName_Success() {

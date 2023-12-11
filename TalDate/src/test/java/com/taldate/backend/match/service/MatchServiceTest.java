@@ -105,7 +105,7 @@ class MatchServiceTest {
 
         Match match = new Match();
         match.setProfile1(currentProfile);
-        match.setProfile2(otherProfile); // Set the ID for otherProfile
+        match.setProfile2(otherProfile);
 
         when(profileService.getCurrentProfile()).thenReturn(currentProfile);
         when(matchRepository.findAllPositiveMatches(currentProfileId)).thenReturn(List.of(match));
@@ -114,7 +114,7 @@ class MatchServiceTest {
         List<ProfileDTO> matches = matchService.getAllMatches();
 
         assertTrue(matches.isEmpty());
-        verify(profileRepository).findById(otherProfileId); // Verifying that findById was called
+        verify(profileRepository).findById(otherProfileId);
     }
 
 

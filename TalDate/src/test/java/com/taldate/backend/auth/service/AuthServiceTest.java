@@ -62,7 +62,7 @@ class AuthServiceTest {
         loginDto = new LoginDTO("john@example.com", "password123");
 
         User mockUser = new User();
-        mockUser.setId(1);  // Set an ID for the user
+        mockUser.setId(1);
         mockUser.setPasswordHash(passwordEncoder.encode(loginDto.password()));
 
         lenient().when(userMapper.registerDTOtoUser(any(RegisterDTO.class))).thenReturn(mockUser);

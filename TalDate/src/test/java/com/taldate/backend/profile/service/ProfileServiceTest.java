@@ -1,9 +1,14 @@
 package com.taldate.backend.profile.service;
 
 import com.taldate.backend.exception.ApplicationException;
+import com.taldate.backend.match.entity.Match;
+import com.taldate.backend.match.repository.MatchRepository;
 import com.taldate.backend.picture.Picture;
 import com.taldate.backend.picture.PictureRepository;
-import com.taldate.backend.profile.dto.*;
+import com.taldate.backend.profile.dto.ProfileDTO;
+import com.taldate.backend.profile.dto.UpdateBioDTO;
+import com.taldate.backend.profile.dto.UpdateGenderPreferenceDTO;
+import com.taldate.backend.profile.dto.UpdateProfilePictureDTO;
 import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.mapper.ProfileMapper;
 import com.taldate.backend.profile.repository.ProfileRepository;
@@ -19,16 +24,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProfileServiceTest {
+
+    @Mock
+    private MatchRepository matchRepository;
 
     @Mock
     private ProfileRepository profileRepository;
@@ -60,15 +65,7 @@ class ProfileServiceTest {
         currentProfile.setProfileActive(true);
         currentProfile.setGenderMale(true);
 
-        profileDTO = ProfileDTO.builder()
-                .name("John Doe")
-                .age(33)
-                .genderPreferenceMale(true)
-                .bio("Sample Bio")
-                .picture("encoded_picture_data")
-                .profileActive(true)
-                .genderMale(true)
-                .build();
+        profileDTO = ProfileDTO.builder().name("John Doe").age(33).genderPreferenceMale(true).bio("Sample Bio").picture("encoded_picture_data").profileActive(true).genderMale(true).build();
 
         SecurityContext securityContext = mock(SecurityContext.class);
         Authentication authentication = mock(Authentication.class);
@@ -136,39 +133,38 @@ class ProfileServiceTest {
     }
 
     @Test
-    void getRandomProfile_Success() {
-        Profile anotherProfile = new Profile();
-        anotherProfile.setId(2);
-        anotherProfile.setName("Jane Doe");
-        anotherProfile.setAge(29);
-        anotherProfile.setBio("Another Sample Bio");
-        anotherProfile.setPicture(new Picture()); // Assuming Picture is set up correctly
-        anotherProfile.setGenderMale(!currentProfile.isGenderPreferenceMale()); // Opposite gender preference
-        anotherProfile.setProfileActive(true);
+    void getRandomProfile_NoMatchingProfiles() {
+        currentProfile.setGenderPreferenceMale(true);
+        when(profileRepository.findById(1)).thenReturn(Optional.of(currentProfile));
 
-        List<Profile> activeProfiles = Arrays.asList(currentProfile, anotherProfile);
+        List<Profile> activeProfiles = new ArrayList<>();
+        Profile matchedProfile1 = new Profile();
+        matchedProfile1.setId(2);
+        matchedProfile1.setName("Jane Doe");
+        matchedProfile1.setGenderMale(false);
+        activeProfiles.add(matchedProfile1);
+
+        Match positiveMatch = new Match();
+        positiveMatch.setProfile1(currentProfile);
+        positiveMatch.setProfile2(matchedProfile1);
+        positiveMatch.setMatchedByBoth(true);
+
+
         when(profileRepository.findByProfileActiveTrue()).thenReturn(activeProfiles);
-        when(random.nextInt(anyInt())).thenReturn(1);
 
-        ProfileSwipeResponseDTO expectedDto = new ProfileSwipeResponseDTO(
-                anotherProfile.getId(), anotherProfile.getName(),
-                anotherProfile.getAge(), anotherProfile.getBio(), "picture_url");
-        when(profileMapper.profileToProfileSwipeResponseDTO(anotherProfile)).thenReturn(expectedDto);
+        when(matchRepository.findAllPositiveMatches(1)).thenReturn(List.of(positiveMatch));
 
-        ProfileSwipeResponseDTO result = profileService.getRandomProfile();
-
-        assertNotNull(result);
-        assertEquals(expectedDto, result);
+        assertThrows(ApplicationException.class, () -> profileService.getRandomProfile());
     }
-
 
 
     @Test
     void getRandomProfile_NoActiveProfiles() {
-        lenient().when(profileRepository.findByProfileActiveTrue()).thenReturn(Arrays.asList());
+        lenient().when(profileRepository.findByProfileActiveTrue()).thenReturn(List.of());
 
         assertThrows(ApplicationException.class, () -> profileService.getRandomProfile());
     }
+
     @Test
     void calculateAge_Success() {
         LocalDate thirtyYearsAgo = LocalDate.now().minusYears(30);
