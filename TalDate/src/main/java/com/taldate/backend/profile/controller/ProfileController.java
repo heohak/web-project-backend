@@ -1,6 +1,6 @@
 package com.taldate.backend.profile.controller;
 
-import com.taldate.backend.profile.dto.ProfileDTO;
+import com.taldate.backend.profile.dto.*;
 import com.taldate.backend.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +17,23 @@ public class ProfileController {
         return profileService.getCurrentProfileDTO();
     }
 
-    @PutMapping
-    public void updateProfile(@RequestBody ProfileDTO dto) {
-        profileService.updateProfile(dto);
+    @PutMapping("/genderPreference")
+    public void updateGenderPreference(@RequestBody UpdateGenderPreferenceDTO dto) {
+        profileService.updateGenderPreference(dto);
+    }
+
+    @PutMapping("/bio")
+    public void updateBio(@RequestBody UpdateBioDTO dto) {
+        profileService.updateBio(dto);
+    }
+
+    @PutMapping("/profilePicture")
+    public void updateProfilePicture(@RequestBody UpdateProfilePictureDTO dto) {
+        profileService.updateProfilePicture(dto);
     }
 
     @GetMapping("/random")
-    public ProfileDTO getRandomProfile() {
+    public ProfileSwipeResponseDTO getRandomProfile() {
         return profileService.getRandomProfile();
     }
 }

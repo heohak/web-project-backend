@@ -53,11 +53,11 @@ public class AuthService {
         // Checks passed!
         // 1. Create new default empty profile
         Profile profile = new Profile();
-        profile.setName(profileService.getFullName(dto.firstName(), dto.lastName()));
-        profile.setAge(profileService.getAge(dto.dateOfBirth()));
+        profile.setName(profileService.combineFullName(dto.firstName(), dto.lastName()));
+        profile.setAge(profileService.calculateAge(dto.dateOfBirth()));
         profile.setGenderPreferenceMale(!dto.genderMale());
         profile.setBio("");
-        profile.setPicture("");
+        profile.setPicture(null);
         profile.setGenderMale(dto.genderMale());
         profile.setProfileActive(false);
         profileRepository.save(profile);
