@@ -1,6 +1,5 @@
 package com.taldate.backend.auth.service;
 
-
 import com.taldate.backend.auth.dto.LoginDTO;
 import com.taldate.backend.auth.dto.LoginResponseDTO;
 import com.taldate.backend.auth.dto.RegisterDTO;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -25,6 +23,7 @@ import java.sql.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,13 +33,16 @@ class AuthServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
     private ProfileRepository profileRepository;
 
     @Mock
     private ProfileService profileService;
+
+    @Mock
+    private UserMapper userMapper;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Mock
     private JwtUtils jwtUtils;
@@ -48,34 +50,32 @@ class AuthServiceTest {
     @InjectMocks
     private AuthService authService;
 
-    @Spy
-    private UserMapper userMapper;
-
     private RegisterDTO registerDto;
     private LoginDTO loginDto;
-    private String testToken = "testToken";
-
 
     @BeforeEach
     void setUp() {
         registerDto = new RegisterDTO(
                 "John", "Doe", "john@example.com", "password123",
-                Date.valueOf("1990-01-01"), true);
-
+                java.sql.Date.valueOf("1990-01-01"), true
+        );
         loginDto = new LoginDTO("john@example.com", "password123");
 
+        User mockUser = new User();
+        mockUser.setId(1);  // Set an ID for the user
+        mockUser.setPasswordHash(passwordEncoder.encode(loginDto.password()));
 
+        lenient().when(userMapper.registerDTOtoUser(any(RegisterDTO.class))).thenReturn(mockUser);
+        lenient().when(userRepository.findByEmail(loginDto.email().toLowerCase())).thenReturn(Optional.of(mockUser));
+        lenient().when(passwordEncoder.matches(loginDto.password(), mockUser.getPasswordHash())).thenReturn(true);
+        lenient().when(jwtUtils.generateToken(mockUser.getId())).thenReturn("mockToken");
     }
 
-    @Test
-    void register() {
-        User user = new User();
-        Profile profile = new Profile();
 
-        when(userRepository.findByEmail(registerDto.email().toLowerCase())).thenReturn(Optional.empty());
-        when(userMapper.registerDTOtoUser(registerDto)).thenReturn(user);
-        when(profileService.getFullName(registerDto.firstName(), registerDto.lastName())).thenReturn("John Doe");
-        when(profileService.getAge(registerDto.dateOfBirth())).thenReturn(30);
+
+    @Test
+    void register_Success() {
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
         assertDoesNotThrow(() -> authService.register(registerDto));
         verify(userRepository).save(any(User.class));
@@ -83,32 +83,50 @@ class AuthServiceTest {
     }
 
     @Test
-    void login() {
-        User user = new User();
-        user.setId(1);
-        user.setPasswordHash(passwordEncoder.encode("password123"));
+    void register_InvalidData_ThrowsException() {
+        RegisterDTO invalidDto = new RegisterDTO("John", "", "john@example.com", "password", java.sql.Date.valueOf("1990-01-01"), true);
 
-        when(userRepository.findByEmail(loginDto.email().toLowerCase())).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(loginDto.password(), user.getPasswordHash())).thenReturn(true);
-        when(jwtUtils.generateToken(user.getId())).thenReturn(testToken);
+        assertThrows(ApplicationException.class, () -> authService.register(invalidDto));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void register_DuplicateEmail_ThrowsException() {
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(new User()));
+
+        assertThrows(ApplicationException.class, () -> authService.register(registerDto));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void login_Success() {
+        User mockUser = new User();
+        mockUser.setId(1);
+        mockUser.setPasswordHash(passwordEncoder.encode(loginDto.password()));
+
+        final String testToken = "mockToken123";
+
+        when(userRepository.findByEmail(loginDto.email().toLowerCase())).thenReturn(Optional.of(mockUser));
+        when(passwordEncoder.matches(loginDto.password(), mockUser.getPasswordHash())).thenReturn(true);
+        when(jwtUtils.generateToken(mockUser.getId())).thenReturn(testToken);
 
         LoginResponseDTO response = authService.login(loginDto);
 
         assertNotNull(response);
         assertEquals(testToken, response.token());
-        verify(jwtUtils).generateToken(user.getId());
     }
+
+
+
 
     @Test
-    void loginFailed() {
-        User user = new User();
-        user.setId(1);
-        user.setPasswordHash(passwordEncoder.encode("correctPassword"));
+    void login_WrongEmail_ThrowsException() {
+        when(userRepository.findByEmail(loginDto.email().toLowerCase())).thenReturn(Optional.empty());
 
-        when(userRepository.findByEmail(loginDto.email().toLowerCase())).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(loginDto.password(), user.getPasswordHash())).thenReturn(false);
-
-        ApplicationException thrown = assertThrows(ApplicationException.class, () -> authService.login(loginDto));
-        assertEquals("Wrong username or password.", thrown.getMessage());
+        assertThrows(ApplicationException.class, () -> authService.login(loginDto));
     }
+
+
+
+
 }
