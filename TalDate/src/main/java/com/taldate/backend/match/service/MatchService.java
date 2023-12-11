@@ -8,6 +8,7 @@ import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.mapper.ProfileMapper;
 import com.taldate.backend.profile.repository.ProfileRepository;
 import com.taldate.backend.profile.service.ProfileService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class MatchService {
     private final ProfileService profileService;
     private final ProfileMapper profileMapper;
 
+    @Transactional
     public void match(MatchDTO dto) {
         // Other user
         int otherId = dto.id();
