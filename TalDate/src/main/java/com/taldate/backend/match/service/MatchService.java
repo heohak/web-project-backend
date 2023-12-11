@@ -45,13 +45,17 @@ public class MatchService {
         if (potentialMatch.isEmpty()) {
             // Create new match
             Match match = new Match();
-            match.setProfile1(profileRepository.findById(id).get());
+            match.setProfile1(profileService.getCurrentProfile());  // profile1 is always the first matcher
             match.setProfile2(profileRepository.findById(otherId).get());
             match.setMatchedByBoth(false);
             matchRepository.save(match);
         } else {
-            // Update the old match
             Match match = potentialMatch.get();
+            if (match.getProfile1().getId() == id) {
+                // We are matching again with the same
+                return;
+            }
+            // Update the old match
             match.setMatchedByBoth(true);
             matchRepository.save(match);
         }
