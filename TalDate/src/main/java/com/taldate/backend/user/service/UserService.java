@@ -100,7 +100,8 @@ public class UserService {
     public void deleteUser() {
         User user = getCurrentUser();
         log.info("Deleting user with ID: {}", user.getId());
-        userRepository.deleteById(user.getId());
+        userRepository.delete(user);
+        profileRepository.delete(profileService.getCurrentProfile());
     }
 
     @Transactional
