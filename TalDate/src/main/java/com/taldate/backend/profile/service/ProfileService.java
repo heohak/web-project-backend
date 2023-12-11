@@ -1,6 +1,8 @@
 package com.taldate.backend.profile.service;
 
 import com.taldate.backend.exception.ApplicationException;
+import com.taldate.backend.match.entity.Match;
+import com.taldate.backend.match.repository.MatchRepository;
 import com.taldate.backend.profile.dto.*;
 import com.taldate.backend.picture.Picture;
 import com.taldate.backend.picture.PictureRepository;
@@ -32,8 +34,10 @@ import java.util.Random;
 public class ProfileService {
     private final PictureRepository pictureRepository;
     private final ProfileRepository profileRepository;
+    private final MatchRepository matchRepository;
     private final ProfileMapper profileMapper;
     private final Random random = new Random();
+
 
     public Profile getCurrentProfile() {
         SecurityContext context = SecurityContextHolder.getContext();
@@ -94,10 +98,21 @@ public class ProfileService {
             throw new ApplicationException("No active profiles available, please try again later");
         }
 
+        List<Match> matchedProfiles = matchRepository.findAllPositiveMatches(profile.getId());
+        List<Integer> matchedProfilesId = new ArrayList<>();
+
+        for (Match match : matchedProfiles) {
+            int otherId = Objects.equals(match.getProfile1().getId(), profile.getId()) ?
+                    match.getProfile2().getId() :
+                    match.getProfile1().getId();
+            matchedProfilesId.add(otherId);
+        }
+
         List<Profile> matchingProfiles = new ArrayList<>();
         for (Profile other : activeProfiles) {
             if (other.isGenderMale() == profile.isGenderPreferenceMale()
-                    && !Objects.equals(other.getId(), profile.getId())) {
+                    && !Objects.equals(other.getId(), profile.getId())
+                    && !matchedProfilesId.contains(other.getId())) {
                 matchingProfiles.add(other);
             }
         }
