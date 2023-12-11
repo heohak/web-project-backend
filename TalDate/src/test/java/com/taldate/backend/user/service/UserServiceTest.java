@@ -1,12 +1,13 @@
 package com.taldate.backend.user.service;
 
+import com.taldate.backend.exception.ApplicationException;
+import com.taldate.backend.profile.entity.Profile;
+import com.taldate.backend.profile.repository.ProfileRepository;
 import com.taldate.backend.profile.service.ProfileService;
 import com.taldate.backend.user.dto.*;
 import com.taldate.backend.user.entity.User;
 import com.taldate.backend.user.mapper.UserMapper;
 import com.taldate.backend.user.repository.UserRepository;
-import com.taldate.backend.profile.entity.Profile;
-import com.taldate.backend.profile.repository.ProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,12 +20,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.Date;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -80,22 +79,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getAllUsers() {
-
-        List<User> users = Arrays.asList(currentUser);
-        List<UserDTO> userDTOs = Arrays.asList(userDTO);
-
-        when(userRepository.findAll()).thenReturn(users);
-        when(userMapper.userToUserDTO(currentUser)).thenReturn(userDTO);
-
-        List<UserDTO> result = userService.getAllUsers();
-
-        assertEquals(userDTOs, result);
-
-        }
-
-    @Test
-    void getUsers_WithoutSearch() {
+    void get_users_without_search() {
         PageRequest pageable = PageRequest.of(0, 10, Sort.by("firstName").ascending());
         Page<User> page = new PageImpl<>(Arrays.asList(currentUser));
 
@@ -110,9 +94,8 @@ class UserServiceTest {
     }
 
 
-
     @Test
-    void updateEmail_Success() {
+    void update_email_success() {
         when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
         UpdateEmailDTO dto = new UpdateEmailDTO("new.email@example.com");
@@ -123,7 +106,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updatePassword_Success() {
+    void update_password_success() {
         when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
         when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
 
@@ -135,10 +118,8 @@ class UserServiceTest {
     }
 
 
-
-
     @Test
-    void updateFirstName_Success() {
+    void update_first_name_success() {
         when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
         UpdateFirstNameDTO dto = new UpdateFirstNameDTO("NewFirstName");
@@ -150,7 +131,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateLastName_Success() {
+    void update_last_name_success() {
         when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
         UpdateLastNameDTO dto = new UpdateLastNameDTO("NewLastName");
@@ -162,7 +143,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateDateOfBirth_Success() {
+    void update_date_of_birth_success() {
         Date newDateOfBirth = Date.valueOf("2000-01-01");
         when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
@@ -175,7 +156,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateGender_Success() {
+    void update_gender_success() {
         when(userRepository.findById(1)).thenReturn(Optional.of(currentUser));
 
         UpdateGenderDTO dto = new UpdateGenderDTO(true);
@@ -183,5 +164,13 @@ class UserServiceTest {
 
         assertTrue(currentUser.isGenderMale());
         verify(userRepository).save(currentUser);
+    }
+
+    @Test
+    void update_gender_unsuccessful() {
+        UpdateGenderDTO dto = new UpdateGenderDTO(true);
+        assertThrows(ApplicationException.class, () -> {
+            userService.updateGender(dto);
+        });
     }
 }
