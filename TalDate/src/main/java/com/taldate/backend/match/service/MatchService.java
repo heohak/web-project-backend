@@ -29,7 +29,7 @@ public class MatchService {
         // Other user
         int otherId = dto.id();
         if (profileRepository.findById(otherId).isEmpty()) {
-            // User supplied id does not exist...
+            log.warn("user supplied id does not exist");
             return;
         }
 
@@ -37,7 +37,7 @@ public class MatchService {
         int id = profileService.getCurrentProfile().getId();
 
         if (id == otherId) {
-            // User supplied id is the same user's id...
+            log.warn("user supplied id is the same as user's own id");
             return;
         }
 
@@ -69,7 +69,7 @@ public class MatchService {
 
             Optional<Profile> otherProfile = profileRepository.findById(otherId);
             if (otherProfile.isEmpty()) {
-                // something gone wrong
+                log.error("match exists with a non-existent profile");
                 continue;
             }
 
