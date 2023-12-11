@@ -3,13 +3,9 @@ package com.taldate.backend.profile.service;
 import com.taldate.backend.exception.ApplicationException;
 import com.taldate.backend.match.entity.Match;
 import com.taldate.backend.match.repository.MatchRepository;
-import com.taldate.backend.profile.dto.*;
 import com.taldate.backend.picture.Picture;
 import com.taldate.backend.picture.PictureRepository;
-import com.taldate.backend.profile.dto.ProfileDTO;
-import com.taldate.backend.profile.dto.UpdateBioDTO;
-import com.taldate.backend.profile.dto.UpdateGenderPreferenceDTO;
-import com.taldate.backend.profile.dto.UpdateProfilePictureDTO;
+import com.taldate.backend.profile.dto.*;
 import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.mapper.ProfileMapper;
 import com.taldate.backend.profile.repository.ProfileRepository;
@@ -57,7 +53,7 @@ public class ProfileService {
     @Transactional
     public void updateGenderPreference(UpdateGenderPreferenceDTO dto) {
         Profile profile = getCurrentProfile();
-        log.info("Updating gender preference for ID: {}", profile.getId());
+        log.debug("Updating gender preference for ID: {}", profile.getId());
 
         profile.setGenderPreferenceMale(dto.newGenderPreferenceMale());
         profileRepository.save(profile);
@@ -66,7 +62,7 @@ public class ProfileService {
     @Transactional
     public void updateBio(UpdateBioDTO dto) {
         Profile profile = getCurrentProfile();
-        log.info("Updating bio for ID: {}", profile.getId());
+        log.debug("Updating bio for ID: {}", profile.getId());
 
         profile.setBio(dto.newBio());
         profileRepository.save(profile);
@@ -75,7 +71,7 @@ public class ProfileService {
     @Transactional
     public void updateProfilePicture(UpdateProfilePictureDTO dto) {
         Profile profile = getCurrentProfile();
-        log.info("Updating profile picture for ID: {}", profile.getId());
+        log.debug("Updating profile picture for ID: {}", profile.getId());
 
         Picture newPicture = new Picture();
         newPicture.setEncodedPicture(dto.newProfilePicture());
@@ -91,7 +87,7 @@ public class ProfileService {
 
     public ProfileSwipeResponseDTO getRandomProfile() {
         Profile profile = getCurrentProfile();
-        log.info("Getting random profile for ID: {}", profile.getId());
+        log.debug("Getting random profile for profile ID: {}", profile.getId());
 
         List<Profile> activeProfiles = profileRepository.findByProfileActiveTrue();
         if (activeProfiles.isEmpty()) {

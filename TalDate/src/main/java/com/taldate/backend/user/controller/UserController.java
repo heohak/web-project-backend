@@ -4,10 +4,7 @@ import com.taldate.backend.user.dto.*;
 import com.taldate.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -21,19 +18,14 @@ public class UserController {
     }
 
     @GetMapping("/paginated")
-    public ResponseEntity<Page<UserDTO>> getUsers(
+    public Page<UserDTO> getUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(required = false) String search
     ) {
-        return ResponseEntity.ok(userService.getUsers(page, size, sortBy, sortDir, search));
-    }
-
-    @GetMapping()
-    public List<UserDTO> getUsers() {
-        return userService.getAllUsers();
+        return userService.getUsers(page, size, sortBy, sortDir, search);
     }
 
     @PutMapping("/password")

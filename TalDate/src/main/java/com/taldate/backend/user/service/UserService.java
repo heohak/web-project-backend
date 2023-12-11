@@ -22,8 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -47,6 +45,7 @@ public class UserService {
     }
 
     public Page<UserDTO> getUsers(int page, int size, String sortBy, String sortDir, String search) {
+        log.debug("Getting users: page {}, size {}, sortBy {}, sortDir {}, search {}}", page, size, sortBy, sortDir, search);
         PageRequest pageable = createPageRequest(page, size, sortBy, sortDir);
 
         if (search != null && !search.trim().isEmpty()) {
@@ -76,18 +75,10 @@ public class UserService {
         }
     }
 
-    public List<UserDTO> getAllUsers() {
-        log.info("Retrieving all users");
-        List<User> users = userRepository.findAll();
-        return users.stream()
-                .map(userMapper::userToUserDTO)
-                .toList();
-    }
-
     @Transactional
     public void updateEmail(UpdateEmailDTO dto) {
         User user = getCurrentUser();
-        log.info("Updating email for user with ID: {}", user.getId());
+        log.debug("Updating email for user with ID: {}", user.getId());
         user.setEmail(dto.newEmail());
         userRepository.save(user);
     }
@@ -95,7 +86,7 @@ public class UserService {
     @Transactional
     public void updatePassword(UpdatePasswordDTO dto) {
         User user = getCurrentUser();
-        log.info("Updating password for user with ID: {}", user.getId());
+        log.debug("Updating password for user with ID: {}", user.getId());
         user.setPasswordHash(passwordEncoder.encode(dto.newPassword()));
         userRepository.save(user);
     }
@@ -104,7 +95,7 @@ public class UserService {
     public void deleteUser() {
         User user = getCurrentUser();
         Profile profile = profileService.getCurrentProfile();
-        log.info("Deleting user with ID: {}", user.getId());
+        log.debug("Deleting user with ID: {}", user.getId());
 
         // could be done on database level (cascading delete), but easier/foolproof for now
         pictureRepository.delete(profile.getPicture());
@@ -116,7 +107,7 @@ public class UserService {
     @Transactional
     public void updateFirstName(UpdateFirstNameDTO dto) {
         User user = getCurrentUser();
-        log.info("Updating first name for user with ID: {}", user.getId());
+        log.debug("Updating first name for user with ID: {}", user.getId());
         user.setFirstName(dto.newFirstName());
 
         Profile profile = user.getProfile();
@@ -129,7 +120,7 @@ public class UserService {
     @Transactional
     public void updateLastName(UpdateLastNameDTO dto) {
         User user = getCurrentUser();
-        log.info("Updating last name for user with ID: {}", user.getId());
+        log.debug("Updating last name for user with ID: {}", user.getId());
         user.setLastName(dto.newLastName());
 
         Profile profile = user.getProfile();
@@ -142,7 +133,7 @@ public class UserService {
     @Transactional
     public void updateDateOfBirth(UpdateDateOfBirthDTO dto) {
         User user = getCurrentUser();
-        log.info("Updating date of birth for user with ID: {}", user.getId());
+        log.debug("Updating date of birth for user with ID: {}", user.getId());
         user.setDateOfBirth(dto.newDateOfBirth());
 
         Profile profile = user.getProfile();
@@ -155,7 +146,7 @@ public class UserService {
     @Transactional
     public void updateGender(UpdateGenderDTO dto) {
         User user = getCurrentUser();
-        log.info("Updating gender for user with ID: {}", user.getId());
+        log.debug("Updating gender for user with ID: {}", user.getId());
         user.setGenderMale(dto.genderMale());
         userRepository.save(user);
     }

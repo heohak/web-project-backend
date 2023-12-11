@@ -69,13 +69,12 @@ public class AuthService {
         user.setProfile(profile);
         userRepository.save(user);
 
-        log.info("New user registered with email: {}", dto.email());
+        log.debug("New user registered with email: {}", dto.email());
 
     }
 
     public LoginResponseDTO login(LoginDTO dto) {
         log.debug("Login attempt for email: {}", dto.email());
-        // Validate fields to do
 
         Optional<User> user = userRepository.findByEmail(dto.email().toLowerCase());
         if (user.isEmpty() || !passwordEncoder.matches(dto.password(), user.get().getPasswordHash())) {
@@ -83,7 +82,7 @@ public class AuthService {
             throw new ApplicationException("Wrong username or password.");
         }
 
-        log.info("User logged in successfully: {}", dto.email());
+        log.debug("User logged in successfully: {}", dto.email());
         // Generate token
         return new LoginResponseDTO(jwtUtils.generateToken(user.get().getId()));
     }
