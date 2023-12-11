@@ -22,7 +22,7 @@ class KanyeQuoteServiceTest {
     private KanyeQuoteService kanyeQuoteService;
 
     @Test
-    void getKanyeQuote() {
+    void get_kanye_quote() {
         String expectedQuote = "I'm a creative genius";
         KanyeQuoteDTO mockResponse = new KanyeQuoteDTO(expectedQuote);
         lenient().when(restTemplate.getForObject(KANYE_REST_URL, KanyeQuoteDTO.class))
