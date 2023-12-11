@@ -1,6 +1,7 @@
 package com.taldate.backend.profile.service;
 
 import com.taldate.backend.exception.ApplicationException;
+import com.taldate.backend.profile.dto.*;
 import com.taldate.backend.picture.Picture;
 import com.taldate.backend.picture.PictureRepository;
 import com.taldate.backend.profile.dto.ProfileDTO;
@@ -84,8 +85,7 @@ public class ProfileService {
         profileRepository.save(profile);
     }
 
-
-    public ProfileDTO getRandomProfile() {
+    public ProfileSwipeResponseDTO getRandomProfile() {
         Profile profile = getCurrentProfile();
         log.info("Getting random profile for ID: {}", profile.getId());
 
@@ -106,7 +106,7 @@ public class ProfileService {
         }
 
         Profile randomProfile = matchingProfiles.get(random.nextInt(matchingProfiles.size()));
-        return profileMapper.profileToProfileDTO(randomProfile);
+        return profileMapper.profileToProfileSwipeResponseDTO(randomProfile);
     }
 
     /* Helpers */
