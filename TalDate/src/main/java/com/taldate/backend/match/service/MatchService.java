@@ -28,15 +28,15 @@ public class MatchService {
 
     @Transactional
     public void match(MatchDTO dto) {
-        // Other user
+        int id = profileService.getCurrentProfile().getId();
         int otherId = dto.id();
+
+        log.debug("Matching profile id {} with other profile id {}", id, otherId);
+
         if (profileRepository.findById(otherId).isEmpty()) {
             log.warn("user supplied id does not exist");
             return;
         }
-
-        // Current user
-        int id = profileService.getCurrentProfile().getId();
 
         if (id == otherId) {
             log.warn("user supplied id is the same as user's own id");
@@ -65,6 +65,8 @@ public class MatchService {
 
     public List<ProfileDTO> getAllMatches() {
         int id = profileService.getCurrentProfile().getId();
+
+        log.debug("Getting all matches for profile id {}", id);
 
         List<Match> matches = matchRepository.findAllPositiveMatches(id);
         List<ProfileDTO> matchedProfiles = new ArrayList<>();
