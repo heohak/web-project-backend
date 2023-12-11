@@ -1,6 +1,7 @@
 package com.taldate.backend.user.mapper;
 
 import com.taldate.backend.auth.dto.RegisterDTO;
+import com.taldate.backend.picture.Picture;
 import com.taldate.backend.profile.dto.ProfileDTO;
 import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.user.dto.UserDTO;
@@ -17,4 +18,11 @@ public interface UserMapper {
     User registerDTOtoUser(RegisterDTO registerDTO);
 
     ProfileDTO profileToProfileDTO(Profile profile);
+
+    default String map(Picture picture) {
+        if (picture == null) {
+            return null;
+        }
+        return picture.getEncodedPicture();
+    }
 }

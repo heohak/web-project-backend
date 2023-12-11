@@ -1,6 +1,7 @@
 package com.taldate.backend.profile.entity;
 
 
+import com.taldate.backend.picture.Picture;
 import com.taldate.backend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -34,8 +35,9 @@ public class Profile {
     @Column
     private String bio;
 
-    @Column
-    private String picture;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "picture_id")
+    private Picture picture;
 
     @Column
     private boolean profileActive;
