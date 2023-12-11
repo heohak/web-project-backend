@@ -88,3 +88,9 @@ We recommend you to test the backend in conjunction with our [frontend](https://
     ```bash
     docker compose down
     ```
+
+
+### Authors:
+- Robin Nook
+- Uku Sõrmus
+- Henry Ohak
