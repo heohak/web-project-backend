@@ -1,6 +1,8 @@
 package com.taldate.backend.profile.service;
 
 import com.taldate.backend.exception.ApplicationException;
+import com.taldate.backend.picture.Picture;
+import com.taldate.backend.picture.PictureRepository;
 import com.taldate.backend.profile.dto.ProfileDTO;
 import com.taldate.backend.profile.dto.UpdateBioDTO;
 import com.taldate.backend.profile.dto.UpdateGenderPreferenceDTO;
@@ -27,6 +29,7 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
+    private final PictureRepository pictureRepository;
     private final ProfileRepository profileRepository;
     private final ProfileMapper profileMapper;
     private final Random random = new Random();
@@ -44,19 +47,6 @@ public class ProfileService {
 
     public ProfileDTO getCurrentProfileDTO() {
         return profileMapper.profileToProfileDTO(getCurrentProfile());
-    }
-
-    @Transactional
-    public void updateProfile(ProfileDTO profileDTO) {
-        Profile profile = getCurrentProfile();
-        log.info("Updating profile for ID: {}", profile.getId());
-
-        profile.setGenderPreferenceMale(profileDTO.genderPreferenceMale());
-        profile.setBio(profileDTO.bio());
-        profile.setPicture(profileDTO.picture());
-        profile.setProfileActive(true);
-
-        profileRepository.save(profile);
     }
 
     @Transactional
@@ -82,10 +72,18 @@ public class ProfileService {
         Profile profile = getCurrentProfile();
         log.info("Updating profile picture for ID: {}", profile.getId());
 
-        profile.setPicture(dto.newProfilePicture());
+        Picture newPicture = new Picture();
+        newPicture.setEncodedPicture(dto.newProfilePicture());
+
+        newPicture = pictureRepository.save(newPicture);
+
+        profile.setPicture(newPicture);
+
         profile.setProfileActive(true);
+
         profileRepository.save(profile);
     }
+
 
     public ProfileDTO getRandomProfile() {
         Profile profile = getCurrentProfile();
