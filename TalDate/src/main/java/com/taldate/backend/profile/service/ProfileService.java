@@ -3,8 +3,8 @@ package com.taldate.backend.profile.service;
 import com.taldate.backend.exception.ApplicationException;
 import com.taldate.backend.profile.dto.ProfileDTO;
 import com.taldate.backend.profile.entity.Profile;
+import com.taldate.backend.profile.mapper.ProfileMapper;
 import com.taldate.backend.profile.repository.ProfileRepository;
-import com.taldate.backend.user.mapper.UserMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class ProfileService {
     private final ProfileRepository profileRepository;
-    private final UserMapper userMapper;
+    private final ProfileMapper profileMapper;
     private final Random random = new Random();
 
     public Profile getCurrentProfile() {
@@ -40,7 +40,7 @@ public class ProfileService {
     }
 
     public ProfileDTO getCurrentProfileDTO() {
-        return userMapper.profileToProfileDTO(getCurrentProfile());
+        return profileMapper.profileToProfileDTO(getCurrentProfile());
     }
 
     @Transactional
@@ -77,7 +77,7 @@ public class ProfileService {
         }
 
         Profile randomProfile = matchingProfiles.get(random.nextInt(matchingProfiles.size()));
-        return userMapper.profileToProfileDTO(randomProfile);
+        return profileMapper.profileToProfileDTO(randomProfile);
     }
 
     public int getAge(Date date) {

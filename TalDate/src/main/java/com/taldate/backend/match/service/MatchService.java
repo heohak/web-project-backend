@@ -4,12 +4,15 @@ import com.taldate.backend.match.dto.MatchDTO;
 import com.taldate.backend.match.entity.Match;
 import com.taldate.backend.match.repository.MatchRepository;
 import com.taldate.backend.profile.dto.ProfileDTO;
+import com.taldate.backend.profile.entity.Profile;
+import com.taldate.backend.profile.mapper.ProfileMapper;
 import com.taldate.backend.profile.repository.ProfileRepository;
 import com.taldate.backend.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +23,7 @@ public class MatchService {
     private final ProfileRepository profileRepository;
     private final MatchRepository matchRepository;
     private final ProfileService profileService;
+    private final ProfileMapper profileMapper;
 
     public void match(MatchDTO dto) {
         // Other user
@@ -54,12 +58,24 @@ public class MatchService {
     }
 
     public List<ProfileDTO> getAllMatches() {
-        // get current user's profile id
+        int id = profileService.getCurrentProfile().getId();
 
-        // get all matches where matched_by_both AND (profile_id == profile_id_1 OR profile_id == profile_id_2)
-        //     get all other profile id-s
-        //     convert profile id-s (to profile) to profile_dto
-        //     return list of profile_dto's
-        return List.of();
+        List<Match> matches = matchRepository.findAllPositiveMatches(id);
+        List<ProfileDTO> matchedProfiles = new ArrayList<>();
+        for (Match match : matches) {
+            int otherId = match.getProfile1().getId() == id ?
+                    match.getProfile2().getId() :
+                    match.getProfile1().getId();
+
+            Optional<Profile> otherProfile = profileRepository.findById(otherId);
+            if (otherProfile.isEmpty()) {
+                // something gone wrong
+                continue;
+            }
+
+            matchedProfiles.add(profileMapper.profileToProfileDTO(otherProfile.get()));
+        }
+
+        return matchedProfiles;
     }
 }
