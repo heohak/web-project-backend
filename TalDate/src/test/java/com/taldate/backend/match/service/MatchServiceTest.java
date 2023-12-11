@@ -8,7 +8,6 @@ import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.mapper.ProfileMapper;
 import com.taldate.backend.profile.repository.ProfileRepository;
 import com.taldate.backend.profile.service.ProfileService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -84,6 +83,10 @@ class MatchServiceTest {
 
     @Test
     void match_WithNonExistentUser() {
+        Profile currentProfile = new Profile();
+        currentProfile.setId(1);
+        when(profileService.getCurrentProfile()).thenReturn(currentProfile);
+
         when(profileRepository.findById(2)).thenReturn(Optional.empty());
 
         MatchDTO dto = new MatchDTO(2);

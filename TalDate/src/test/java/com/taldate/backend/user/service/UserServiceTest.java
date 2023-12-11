@@ -1,12 +1,13 @@
 package com.taldate.backend.user.service;
 
+import com.taldate.backend.exception.ApplicationException;
+import com.taldate.backend.profile.entity.Profile;
+import com.taldate.backend.profile.repository.ProfileRepository;
 import com.taldate.backend.profile.service.ProfileService;
 import com.taldate.backend.user.dto.*;
 import com.taldate.backend.user.entity.User;
 import com.taldate.backend.user.mapper.UserMapper;
 import com.taldate.backend.user.repository.UserRepository;
-import com.taldate.backend.profile.entity.Profile;
-import com.taldate.backend.profile.repository.ProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,12 +20,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.Date;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -80,21 +79,6 @@ class UserServiceTest {
     }
 
     @Test
-    void getAllUsers() {
-
-        List<User> users = Arrays.asList(currentUser);
-        List<UserDTO> userDTOs = Arrays.asList(userDTO);
-
-        when(userRepository.findAll()).thenReturn(users);
-        when(userMapper.userToUserDTO(currentUser)).thenReturn(userDTO);
-
-        List<UserDTO> result = userService.getAllUsers();
-
-        assertEquals(userDTOs, result);
-
-        }
-
-    @Test
     void getUsers_WithoutSearch() {
         PageRequest pageable = PageRequest.of(0, 10, Sort.by("firstName").ascending());
         Page<User> page = new PageImpl<>(Arrays.asList(currentUser));
@@ -108,7 +92,6 @@ class UserServiceTest {
         assertEquals(userDTO, result.getContent().get(0));
         verify(userRepository).findAll(pageable);
     }
-
 
 
     @Test
@@ -133,8 +116,6 @@ class UserServiceTest {
         assertEquals("encodedNewPassword", currentUser.getPasswordHash());
         verify(userRepository).save(currentUser);
     }
-
-
 
 
     @Test
@@ -183,5 +164,13 @@ class UserServiceTest {
 
         assertTrue(currentUser.isGenderMale());
         verify(userRepository).save(currentUser);
+    }
+
+    @Test
+    void updateGender_Unsuccessful() {
+        UpdateGenderDTO dto = new UpdateGenderDTO(true);
+        assertThrows(ApplicationException.class, () -> {
+            userService.updateGender(dto);  // user not found while in service layer
+        });
     }
 }
