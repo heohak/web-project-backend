@@ -46,7 +46,7 @@ public class MatchService {
             // Create new match
             Match match = new Match();
             match.setProfile1(profileRepository.findById(id).get());
-            match.setProfile2(profileRepository.findById(id).get());
+            match.setProfile2(profileRepository.findById(otherId).get());
             match.setMatchedByBoth(false);
             matchRepository.save(match);
         } else {
