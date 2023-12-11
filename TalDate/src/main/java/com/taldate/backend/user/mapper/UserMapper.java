@@ -16,13 +16,4 @@ public interface UserMapper {
     @Mapping(target = "passwordHash", ignore = true)
     @Mapping(target = "id", ignore = true)
     User registerDTOtoUser(RegisterDTO registerDTO);
-
-    ProfileDTO profileToProfileDTO(Profile profile);
-
-    default String map(Picture picture) {
-        if (picture == null) {
-            return null;
-        }
-        return picture.getEncodedPicture();
-    }
 }

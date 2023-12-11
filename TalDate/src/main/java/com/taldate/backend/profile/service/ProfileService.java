@@ -1,6 +1,7 @@
 package com.taldate.backend.profile.service;
 
 import com.taldate.backend.exception.ApplicationException;
+import com.taldate.backend.profile.dto.*;
 import com.taldate.backend.picture.Picture;
 import com.taldate.backend.picture.PictureRepository;
 import com.taldate.backend.profile.dto.ProfileDTO;
@@ -8,8 +9,8 @@ import com.taldate.backend.profile.dto.UpdateBioDTO;
 import com.taldate.backend.profile.dto.UpdateGenderPreferenceDTO;
 import com.taldate.backend.profile.dto.UpdateProfilePictureDTO;
 import com.taldate.backend.profile.entity.Profile;
+import com.taldate.backend.profile.mapper.ProfileMapper;
 import com.taldate.backend.profile.repository.ProfileRepository;
-import com.taldate.backend.user.mapper.UserMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,10 +32,10 @@ import java.util.Random;
 public class ProfileService {
     private final PictureRepository pictureRepository;
     private final ProfileRepository profileRepository;
-    private final UserMapper userMapper;
+    private final ProfileMapper profileMapper;
     private final Random random = new Random();
 
-    private Profile getCurrentProfile() {
+    public Profile getCurrentProfile() {
         SecurityContext context = SecurityContextHolder.getContext();
         int id = (int) (context.getAuthentication().getPrincipal());
 
@@ -46,7 +47,7 @@ public class ProfileService {
     }
 
     public ProfileDTO getCurrentProfileDTO() {
-        return userMapper.profileToProfileDTO(getCurrentProfile());
+        return profileMapper.profileToProfileDTO(getCurrentProfile());
     }
 
     @Transactional
@@ -84,8 +85,7 @@ public class ProfileService {
         profileRepository.save(profile);
     }
 
-
-    public ProfileDTO getRandomProfile() {
+    public ProfileSwipeResponseDTO getRandomProfile() {
         Profile profile = getCurrentProfile();
         log.info("Getting random profile for ID: {}", profile.getId());
 
@@ -106,7 +106,7 @@ public class ProfileService {
         }
 
         Profile randomProfile = matchingProfiles.get(random.nextInt(matchingProfiles.size()));
-        return userMapper.profileToProfileDTO(randomProfile);
+        return profileMapper.profileToProfileSwipeResponseDTO(randomProfile);
     }
 
     /* Helpers */

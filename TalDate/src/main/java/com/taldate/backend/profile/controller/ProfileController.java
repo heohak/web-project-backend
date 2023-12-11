@@ -1,9 +1,6 @@
 package com.taldate.backend.profile.controller;
 
-import com.taldate.backend.profile.dto.ProfileDTO;
-import com.taldate.backend.profile.dto.UpdateBioDTO;
-import com.taldate.backend.profile.dto.UpdateGenderPreferenceDTO;
-import com.taldate.backend.profile.dto.UpdateProfilePictureDTO;
+import com.taldate.backend.profile.dto.*;
 import com.taldate.backend.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +33,7 @@ public class ProfileController {
     }
 
     @GetMapping("/random")
-    public ProfileDTO getRandomProfile() {
+    public ProfileSwipeResponseDTO getRandomProfile() {
         return profileService.getRandomProfile();
     }
 }
