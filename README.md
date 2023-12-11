@@ -11,9 +11,11 @@ If you just want to run & test the app locally, run
 docker compose up -d
 ```
 
-This will start both  the database and the application server (Spring Boot with Tomcat).
+This will start both the database and the application server (Spring Boot with Tomcat).
 
-If you want to ... todo
+We recommend you to test the backend in conjunction with our [frontend](https://github.com/Robsukas/iti0302-2023-frontend), see for more in Wiki.
+
+### Development
 
 #### Required:
 
@@ -23,9 +25,9 @@ If you want to ... todo
 #### 1. Clone the repository
 
 HTTPS:
-```bash
-git clone https://github.com/Robsukas/iti0302-2023-backend.git
-```
+  ```bash
+  git clone https://github.com/Robsukas/iti0302-2023-backend.git
+  ```
 or SSH:
   ```bash
   git clone git@github.com:Robsukas/iti0302-2023-backend.git
@@ -78,8 +80,6 @@ If you repeat the request, you should receive error 400 with the message `{"erro
 
 You can uncomment `.anyRequest().permitAll()` in SecurityConfig.java 
 
-We recommend you to test the backend in conjunction with our [frontend](https://github.com/Robsukas/iti0302-2023-frontend).
-
 #### 5. Wind down
 
 1. Kill the app server<br>
@@ -88,7 +88,6 @@ We recommend you to test the backend in conjunction with our [frontend](https://
     ```bash
     docker compose down
     ```
-
 
 ### Authors:
 - Robin Nook
