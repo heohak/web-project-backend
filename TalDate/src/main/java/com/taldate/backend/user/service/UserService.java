@@ -1,6 +1,8 @@
 package com.taldate.backend.user.service;
 
 import com.taldate.backend.exception.ApplicationException;
+import com.taldate.backend.match.repository.MatchRepository;
+import com.taldate.backend.picture.PictureRepository;
 import com.taldate.backend.profile.entity.Profile;
 import com.taldate.backend.profile.repository.ProfileRepository;
 import com.taldate.backend.profile.service.ProfileService;
@@ -26,6 +28,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private final MatchRepository matchRepository;
+    private final PictureRepository pictureRepository;
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
     private final ProfileService profileService;
@@ -99,7 +103,12 @@ public class UserService {
     @Transactional
     public void deleteUser() {
         User user = getCurrentUser();
+        Profile profile = profileService.getCurrentProfile();
         log.info("Deleting user with ID: {}", user.getId());
+
+        // could be done on database level (cascading delete), but easier/foolproof for now
+        pictureRepository.delete(profile.getPicture());
+        matchRepository.deleteMatchesByProfileId(profile.getId());
         userRepository.delete(user);
         profileRepository.delete(profileService.getCurrentProfile());
     }
